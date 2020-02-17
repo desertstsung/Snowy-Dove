@@ -1,3 +1,4 @@
+;add metadata
 pro addMeta, raster, tag, val
   compile_opt idl2, hidden
 
