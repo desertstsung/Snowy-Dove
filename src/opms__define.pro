@@ -81,10 +81,7 @@ pro oPMS::cleanup
   lastIndex = (WHERE(self.files ne ''))[-1]
 
   ;delete temp files
-  for i = 1L, lastIndex do begin
-    ENVI_OPEN_FILE, self.files[i], r_fid = fid
-    ENVI_FILE_MNG, id = fid, /REMOVE, /DELETE
-  endfor
+  for i = 1L, lastIndex do delImg, self.files[i]
   log, 'delete temp files'
 
   ;delete unpack image directory

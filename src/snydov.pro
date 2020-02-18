@@ -14,9 +14,9 @@
 ;    ffconvert.pro
 ;
 ; :Usage:
-;    snyDov, string [, dem = string] [, region = string] [, /qac] [, /scale] [, /tiff] [, /ndvi]
+;    snyDov, string [, dem = string] [, region = string] [, /QAC] [, /SCALE] [, /TIFF] [, /NDVI]
 ;    or simply
-;    snyDov, string [, d = string] [, r = string] [, /q] [, /s] [, /t] [, /n]
+;    snydov, string [, d = string] [, r = string] [, /q] [, /s] [, /t] [, /n]
 ;
 ; :Arguments:
 ;    i_dir:  string of directory path which include original gz files to process
@@ -51,7 +51,7 @@
 ;    Chengdu University of Information Technology
 ;-
 pro snyDov, i_dir, dem_fn = demFn, region = shpFn, $
-  qac = qac, scale = scale, tiff = tiff, ndvi = ndvi
+  qac = QAC, scale = SCALE, tiff = TIFF, ndvi = NDVI
   compile_opt idl2, hidden
 
   ON_ERROR, 2
@@ -89,7 +89,7 @@ pro snyDov, i_dir, dem_fn = demFn, region = shpFn, $
   endif else begin
     FILE_MKDIR, o_dir
   endelse
-  DEFSYSV, '!log_fn', FILEPATH('snyDov_' + timeEx() + '.log', root = o_dir), 1
+  DEFSYSV, '!log_fn', FILEPATH('snyDov_' + timeEx(/FILENAME) + '.log', root = o_dir), 1
 
   DLM_LOAD, 'XML', 'SHAPEFILE', 'JPEG2000', 'JPEG', 'PNG', $
     'TIFF', 'GDAL', 'MAP_PE', 'NATIVE'

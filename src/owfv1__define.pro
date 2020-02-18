@@ -57,10 +57,7 @@ pro oWFV1::cleanup
 
   lastIndex = (WHERE(self.files ne ''))[-1]
   
-  for i = 1L, lastIndex do begin
-    ENVI_OPEN_FILE, self.files[i], r_fid = fid
-    ENVI_FILE_MNG, id = fid, /REMOVE, /DELETE
-  endfor
+  for i = 1L, lastIndex do delImg, self.files[i]
   log, 'delete temp files'
   
   FILE_DELETE, self.imgDir, /RECURSIVE
