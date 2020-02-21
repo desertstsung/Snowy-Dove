@@ -39,7 +39,7 @@
 ;
 ; :History:
 ;    //v18.12.06 - v19.05.22: original version of project jiaotang//
-;    v0.1.0: first version, date 2020/2/21
+;    v0.1-alpha: first version, date 2020/2/21
 ;
 ; :Author:
 ;    deserts Tsung (desertstsung@qq.com)
