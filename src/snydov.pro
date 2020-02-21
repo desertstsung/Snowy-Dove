@@ -8,28 +8,23 @@
 ; :Requires:
 ;    IDL8.3/ENVI5.1 or later
 ;
-; :Rely-on:
-;    timeex.pro, dov4pms.pro, dov1wfv.pro, dov6wfv.pro
-;    op__define.pro, o1w__define.pro, o6w__define.pro
-;    ffconvert.pro
-;
 ; :Usage:
-;    snyDov, string [, dem = string] [, region = string] [, /QAC] [, /SCALE] [, /TIFF] [, /NDVI]
+;    snyDov, i_dir [, dem_fn = string] [, region = string] [, /QAC] [, /SCALE] [, /TIFF] [, /NDVI]
 ;    or simply
-;    snydov, string [, d = string] [, r = string] [, /q] [, /s] [, /t] [, /n]
+;    snydov, i_dir [, d = string] [, r = string] [, /q] [, /s] [, /t] [, /n]
 ;
 ; :Arguments:
 ;    i_dir:  string of directory path which include original gz files to process
 ;
 ; :Params:
 ;    dem_fn: string of DEM filename to orthorectify imagery, using GMTED2010.jp2 for default
-;    region: string shapefile or ROI filename to subset the imagery
+;    region: string of shapefile or ROI filename to subset the imagery
 ;
 ; :Keywords:
 ;    qac:   apply quick atmospheric correction
 ;    scale: reduce the QUAC outcome to original scale range from 0-1
 ;    tiff:  convert the default ENVI format to tiff format
-;    ndvi:  get an extra NDVI
+;    ndvi:  get an extra NDVI raster in ENVI format
 ;
 ; :Examples:
 ;    snyDov, '/home/jtsung/Downloads/testData4SnowyDove'
@@ -44,7 +39,7 @@
 ;
 ; :History:
 ;    //v18.12.06 - v19.05.22: original version of project jiaotang//
-;    v0.1.0: first version, date 2020/2/6
+;    v0.1.0: first version, date 2020/2/21
 ;
 ; :Author:
 ;    deserts Tsung (desertstsung@qq.com)
@@ -110,10 +105,12 @@ pro snyDov, i_dir, dem_fn = demFn, region = shpFn, $
     flag = [(KEYWORD_SET(shpFn) ? shpFn : '0'), $
       (KEYWORD_SET(qac) ? '1' : '0'), (KEYWORD_SET(scale) ? '1' : '0')]
 
+    ;PMS Handler, for gf1-pms, gf1b/c/d-pms, gf2-pms, gf6-pms
     if STRCMP(info[1], 'PMS', 3) then begin
       DEFSYSV, '!obj', oPMS(gz_fn, [info[0], info[1], $
         STRMID(info[4], 0, 4)], flag, o_fn)
       PMSHandler, demFn
+    ;WFV Handler, for gf1-wfv and gf6-wfv
     endif else if STRCMP(info[1], 'WFV', 3) then begin
 
       case info[0] of
@@ -134,6 +131,7 @@ pro snyDov, i_dir, dem_fn = demFn, region = shpFn, $
       MESSAGE, 'not supported', /INFORMATIONAL, /CONTINUE
     endelse
 
+    ;NDVI generate
     if KEYWORD_SET(ndvi) then begin
       fnNDVI = FILEPATH(FILE_BASENAME(o_fn) + '_NDVI', $
         root = FILE_DIRNAME(o_fn))
@@ -141,6 +139,7 @@ pro snyDov, i_dir, dem_fn = demFn, region = shpFn, $
       log, 'output NDVI file: ' + fnNDVI
     endif
 
+    ;convert ENVI format to GEOTIFF
     if KEYWORD_SET(tiff) then begin
       fnTIFF = FILEPATH(FILE_BASENAME(o_fn) + '_TIFF.tiff', $
         root = FILE_DIRNAME(o_fn))

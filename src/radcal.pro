@@ -1,8 +1,16 @@
+;+
+; procedure to apply qradiance calibration
+;
+; :Arguments:
+;   i_fn: input filename
+;   o_fn: target calibrated filename
+;-
 pro radCal, i_fn, o_fn
   compile_opt idl2, hidden
   log, 'radCal initialize'
   log, 'radCal in: ' + FILE_BASENAME(i_fn)
 
+  ;add gain and offset value
   inRaster = !e.OpenRaster(i_fn)
   if inRaster.NBANDS ne N_ELEMENTS(!obj.calGain) then begin
     if inRaster.NBANDS eq 1 then begin
@@ -18,6 +26,7 @@ pro radCal, i_fn, o_fn
   endelse
   log, 'radCal load gain and offset values'
 
+  ;envitask to apply calibration
   task = ENVITask('RadiometricCalibration')
   log, 'radCal task ready'
   task.Input_Raster = inRaster

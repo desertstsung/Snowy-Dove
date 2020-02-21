@@ -1,9 +1,18 @@
+;+
+; procedure to apply orthorectification
+;
+; :Arguments:
+;   i_fn: input filename
+;   dem:  filename of DEM
+;   o_fn: target orthoretified filename
+;-
 pro rpcOrtho, i_fn, dem, o_fn
   compile_opt idl2, hidden
   log, 'rpcOrtho initialize'
   log, 'rpcOrtho in: ' + FILE_BASENAME(i_fn)
   log, 'rpcOrtho dem: ' + FILE_BASENAME(dem)
 
+  ;envitask to apply RPCOrthorectification
   inRaster = !e.OpenRaster(i_fn)
   demRaster = !e.OpenRaster(dem)
   Task = ENVITask('RPCOrthorectification')

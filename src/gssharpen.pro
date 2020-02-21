@@ -1,3 +1,9 @@
+;+
+; procedure to sharpen mss using pan
+;
+; :Keywords:
+;   o_fn: named variable to return the output fn
+;-
 pro gsSharpen, o_fn = r_fn
   compile_opt idl2, hidden
   log, 'gsSharpen initialize'

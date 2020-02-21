@@ -1,3 +1,9 @@
+;+
+; procedure to process images from gf6-wfv sensor
+;
+; :Arguments:
+;   dem_fn: filename of DEM
+;-
 pro WFV6Handler, dem_fn
   compile_opt idl2, hidden
 
@@ -6,11 +12,14 @@ pro WFV6Handler, dem_fn
   scenes = FILE_SEARCH(!obj.imgDir, '*.tiff')
   scenes_Ortho = !NULL
   foreach scene, scenes do begin
+    ;gf6 need to reload spatial reference
+    ;in order to do RPC Orthorectification
     rpcRedefine, scene
 
     !obj.appendFile
     scene_Ortho = !obj.getLastFile()
 
+    ;rpc orthorectify
     rpcOrtho, scene, dem_fn, scene_Ortho
     scenes_Ortho = [scenes_Ortho, scene_Ortho]
   endforeach
@@ -20,6 +29,7 @@ pro WFV6Handler, dem_fn
     goto, mosaic__
   endif
 
+  ;shapefile subset
   scenes_Sub = !NULL
   foreach img, scenes_Ortho do begin
     !obj.appendFile
@@ -31,6 +41,7 @@ pro WFV6Handler, dem_fn
   endforeach
   imgs4Mosaic = scenes_Sub
 
+  ;mosaic for gf6-wfv
   mosaic__: begin
     if N_ELEMENTS(imgs4Mosaic) le 1 then begin
       if (!obj.calGain)[0] eq -1 and $
@@ -52,6 +63,7 @@ pro WFV6Handler, dem_fn
     mosaicGF6, imgs4Mosaic, img_Mosaic
   end
 
+  ;radiance calibration
   radCal__: begin
     if (!obj.calGain)[0] eq -1 then goto, quac__
 
@@ -65,6 +77,7 @@ pro WFV6Handler, dem_fn
     radCal, img4Cal, img_Cal
   end
 
+  ;quick atmospheric correction
   quac__: begin
     if (!obj.flag)[1] eq '1' and (!obj.wvl)[0] ne -1 then begin
       img4QUAC = !obj.getLastFile()
@@ -72,5 +85,6 @@ pro WFV6Handler, dem_fn
     endif
   end
 
+  ;destroy oWFV6
   OBJ_DESTROY, !obj
 end

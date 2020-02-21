@@ -1,3 +1,9 @@
+;+
+; procedure to process images from pms sensor
+;
+; :Arguments:
+;   dem_fn: filename of DEM
+;-
 pro PMSHandler, dem_fn
   compile_opt idl2, hidden
 
@@ -8,10 +14,11 @@ pro PMSHandler, dem_fn
   isGF6 = STRPOS(FILE_BASENAME(!obj.tgz_fn), 'GF6') ne -1 ? 1 : 0
   if not isGF6 then goto, rpcOrtho__
 
-  ;gf6-pms need to reload spatial reference
+  ;gf6 need to reload spatial reference
   ;in order to do RPC Orthorectification
   rpcRedefine, mssImg & rpcRedefine, panImg
 
+  ;rpc orthorectify
   rpcOrtho__: begin
     !obj.appendFile, /TWOTIME
     !obj._getLast2, mss = mss_Ortho, pan = pan_Ortho
@@ -21,12 +28,14 @@ pro PMSHandler, dem_fn
 
   if (!obj.flag)[0] eq '0' then goto, radCal__
 
+  ;shapefile subset
   !obj.appendFile, /TWOTIME
   !obj._getLast2, mss = mss_Sub, pan = pan_Sub
   subsetByShp, mss_Ortho, mss_Sub
   subsetByShp, pan_Ortho, pan_Sub
   if ~FILE_TEST(mss_Sub) or ~FILE_TEST(mss_Sub) then RETURN
 
+  ;radiance calibration
   radCal__: begin
     if (!obj.calGain)[0] eq -1 then goto, imgFusion__
     !obj._getLast2, mss = mss4Cal, pan = pan4Cal
@@ -36,11 +45,14 @@ pro PMSHandler, dem_fn
     radCal, pan4Cal, pan_Cal
   end
 
+  ;gs sharpen
   imgFusion__: gsSharpen, o_fn = gs_fn
 
+  ;quick atmospheric correction
   if (!obj.flag)[1] eq '1' and (!obj.wvl)[0] ne -1 then begin
     quac, gs_fn
   endif
 
+  ;destroy oPMS
   OBJ_DESTROY, !obj
 end

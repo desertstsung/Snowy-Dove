@@ -1,3 +1,9 @@
+;+
+; procedure to delete auxiliary files of a raster
+;
+; :Arguments:
+;   fn: raster filename
+;-
 pro delImg, fn
   compile_opt idl2, hidden
 

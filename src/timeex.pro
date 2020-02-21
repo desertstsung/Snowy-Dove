@@ -1,5 +1,9 @@
 ;+
-; function to return time string with yyyy-MM-dd-HH-mm-ss format
+; function to return time string with 'yyyy-MM-dd HH:mm:ss' format
+;
+; :Keywords:
+;   filename: symbol ':' cant be used in filename under unix or win,
+;             set this keyword to return 'yyyy-MM-dd_HHmmss' format
 ;-
 function timeEx, filename = FILENAME
   compile_opt idl2, hidden

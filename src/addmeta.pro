@@ -1,4 +1,11 @@
-;add metadata
+;+
+; procedure to add/update a tag in a raster's metadata
+;
+; :Arguments:
+;   raster: ENVIRaster object to change metadata
+;   tag:    tag name string
+;   val:    value of the certain tag
+;-
 pro addMeta, raster, tag, val
   compile_opt idl2, hidden
 

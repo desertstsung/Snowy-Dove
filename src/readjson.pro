@@ -1,5 +1,5 @@
 ;+
-; read JSON format text file
+; function to read JSON format text file
 ; returns -1 when given key is not correct
 ;
 ; :Arguments:

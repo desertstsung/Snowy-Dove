@@ -1,19 +1,28 @@
+;+
+; procedure to apply quick atmospheric correction
+;
+; :Arguments:
+;   i_fn: input filename
+;-
 pro quac, i_fn
   compile_opt idl2, hidden
   log, 'quac initialize'
   log, 'quac in: ' + FILE_BASENAME(i_fn)
 
+  ;get target filename
   if (!obj.flag)[2] eq '1' then begin
     !obj.appendFile
     o_fn = !obj.getLastFile()
   endif else o_fn = (!obj.files)[0]
 
+  ;add wavelength info
   raster = !e.OpenRaster(i_fn)
   addMeta, raster, 'Wavelength', !obj.wvl
   addMeta, raster, 'wavelength units', 'Nanometers'
   raster.Close
   log, 'quac addWavelength done'
 
+  ;envitask to apply QUAC
   inRaster = !e.OpenRaster(i_fn)
   Task = ENVITask('QUAC')
   log, 'quac task ready'
@@ -25,6 +34,7 @@ pro quac, i_fn
   log, 'quac done'
   log, 'quac out: ' + FILE_BASENAME(o_fn)
 
+  ;reduce the QUAC outcome to original scale range from 0-1
   if (!obj.flag)[2] eq '1' then begin
     i_fn = !obj.getLastFile()
     o_fn = (!obj.files)[0]
