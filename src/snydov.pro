@@ -84,7 +84,7 @@ pro snyDov, i_dir, dem_fn = demFn, region = shpFn, $
   endif else begin
     FILE_MKDIR, o_dir
   endelse
-  DEFSYSV, '!log_fn', FILEPATH('snyDov_' + timeEx(/FILENAME) + '.log', root = o_dir), 1
+  DEFSYSV, '!log_fn', FILEPATH(timeEx(/FILENAME) + '.log', root = o_dir), 1
 
   DLM_LOAD, 'XML', 'SHAPEFILE', 'JPEG2000', 'JPEG', 'PNG', $
     'TIFF', 'GDAL', 'MAP_PE', 'NATIVE'

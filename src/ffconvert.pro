@@ -13,7 +13,7 @@ pro ffConvert, i_fn, o_fn, wvl_fn, info
 
   ;convert to tiff
   raster = !e.OpenRaster(i_fn)
-  raster.Export, o_fn, 'tiff'
+  raster.Export, o_fn, 'tiff', inter = 'bip'
   raster.Close
   delImg, i_fn
 
