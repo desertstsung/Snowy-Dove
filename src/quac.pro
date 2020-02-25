@@ -36,8 +36,10 @@ pro quac, i_fn
 
   ;reduce the QUAC outcome to original scale range from 0-1
   if (!obj.flag)[2] eq '1' then begin
+    log, 'quac divide 10k initialize'
     i_fn = !obj.getLastFile()
     o_fn = (!obj.files)[0]
+    log, 'quac divide 10k in: ' + FILE_BASENAME(i_fn)
 
     orgRaster = !e.OpenRaster(i_fn)
     outRaster = ENVIRaster(URI = o_fn, $

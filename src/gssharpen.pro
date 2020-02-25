@@ -19,13 +19,13 @@ pro gsSharpen, o_fn = r_fn
     o_fn = !obj.getLastFile()
   endif else o_fn = (!obj.files)[0]
 
-  ;convert interleave from default bsq to bip
+  ;convert interleave from default bsq to bil
   ;to speed up ENVI_GS_SHARPEN_DOIT
   ENVI_OPEN_FILE, mss_fn, r_fid = mssId
   ENVI_FILE_QUERY, mssId, dims = dims, nb = nb
   ENVI_DOIT, 'CONVERT_INPLACE_DOIT', fid = mssId, $
     pos = LINDGEN(nb), dims = dims, $
-    o_interleave = 2, r_fid = bilId
+    o_interleave = 1, r_fid = bilId
 
   ENVI_OPEN_FILE, pan_fn, r_fid = panId
 
