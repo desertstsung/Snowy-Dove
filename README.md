@@ -14,6 +14,7 @@ IDL> cd, 'dir where snydov.sav is'
 IDL> snyDov, 'dir where *.tar.gz files are', dem = 'dem fn', region = 'shapefile fn', /QAC, /SCALE, /TIFF, /NDVI
 ```
 # Notice
+- IDL8.3/ENVI5.1 or later is required
 - the json file must be in the dir where snyDov.sav is
 - export to tiff format may encounter warning, it doesnot matter
 - make sure you have the license for FLAASH if keyword QAC is set
