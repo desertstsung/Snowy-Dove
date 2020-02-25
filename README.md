@@ -1,10 +1,11 @@
 # Snowy Dove
 an IDL program aimed at auto-pre-processing imageries taken by GaoFen(GF)1, GF2 and GF6, in batch mode.
-# Build Example
-```
-$ cd ./src
-$ /usr/local/exelis/idl/bin/idl ./make -arg /home/jtsung/snydov.sav
-$ cp ./src/*.json /home/jtsung
+# Build
+```shell
+$ git clone https://github.com/desertstsung/Snowy-Dove.git
+$ cd ./Snowy-Dove/src
+$ /usr/local/exelis/idl/bin/idl ./make -arg yourdir/snydov.sav
+$ cp ./*.json yourdir
 ```
 # Usage
 ```
