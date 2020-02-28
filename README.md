@@ -4,15 +4,22 @@ an IDL program aimed at auto-pre-processing imageries taken by GaoFen(GF)1, GF2 
 ```shell
 $ git clone https://github.com/desertstsung/Snowy-Dove.git
 $ cd ./Snowy-Dove/src
-$ /usr/local/exelis/idl/bin/idl ./make -arg yourdir/snydov.sav
+$ idl ./make -arg yourdir/snydov.sav
 $ cp ./*.json yourdir
 ```
 # Usage
 ```
 $ idl
-IDL> cd, 'dir where snydov.sav is'
-IDL> snyDov, 'dir where *.tar.gz files are', dem = 'dem fn', region = 'shapefile fn', /QAC, /SCALE, /TIFF, /NDVI
+IDL> cd, 'yourdir'
+IDL> snyDov, i_dir, dem = string, region = sting, /QAC, /SCALE, /TIFF, /NDVI
 ```
+- ``i_dir``:            string directory where *.tar.gz files are
+- ``dem(optional)``:    string fn of DEM used to orthoretcify images
+- ``region(optional)``: string fn of shapefile to subset images
+- ``QAC(optional)``:    keyword to apply QUAC
+- ``SCALE(optional)``:  keyword to divide 10k based on the outcome of QUAC
+- ``TIFF(optional)``:   keyword to convert default ENVI format to TIFF format
+- ``NDVI(optional)``:   keyword to get an extra NDVI result
 # Notice
 - IDL8.3/ENVI5.1 or later is required
 - the json file must be in the dir where snyDov.sav is

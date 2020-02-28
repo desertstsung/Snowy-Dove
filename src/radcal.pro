@@ -7,8 +7,7 @@
 ;-
 pro radCal, i_fn, o_fn
   compile_opt idl2, hidden
-  log, 'radCal initialize'
-  log, 'radCal in: ' + FILE_BASENAME(i_fn)
+  log, 'radiance calibration [I]: ', i_fn
 
   ;add gain and offset value
   inRaster = !e.OpenRaster(i_fn)
@@ -24,15 +23,12 @@ pro radCal, i_fn, o_fn
     addMeta, inRaster, 'data gain values', !obj.calGain
     addMeta, inRaster, 'data offset values', !obj.calOffs
   endelse
-  log, 'radCal load gain and offset values'
 
   ;envitask to apply calibration
   task = ENVITask('RadiometricCalibration')
-  log, 'radCal task ready'
   task.Input_Raster = inRaster
   task.Output_Raster_URI = o_fn
   task.Execute
   inRaster.Close
-  log, 'radCal done'
-  log, 'radCal out: ' + FILE_BASENAME(o_fn)
+  log, 'radiance calibration [O]: ', o_fn
 end

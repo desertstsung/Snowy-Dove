@@ -7,25 +7,12 @@
 ;-
 pro subsetByShp, i_fn, o_fn
   compile_opt idl2, hidden
-  log, 'subsetByShp initialize'
-  log, 'subsetByShp in: ' + FILE_BASENAME(i_fn)
+  log, 'subset by shapefile [I]: ', i_fn
 
   i_shp = (!obj.flag)[0]
 
   raster = !e.OpenRaster(i_fn)
   shp = !e.OpenVector(i_shp)
-
-  ;if the raster in not inside the shapefile
-  roi = ENVIROI()
-  roi.AddVectorRecords, shp, 0
-  n_inRaster = roi.PixelCount(raster)
-  roi.Close
-  if n_inRaster eq 0 then begin
-    log, 'subsetByShp done, ' + $
-      'but current raster has no valid pixel in ' + $
-      FILE_BASENAME(i_shp)
-    RETURN
-  endif
 
   ;get the boundry of shapefile
   oShp = IDLffShape(i_shp)
@@ -63,6 +50,5 @@ pro subsetByShp, i_fn, o_fn
   subRaster.Close
   raster.Close
   shp.Close
-  log, 'subsetByShp done'
-  log, 'subsetByShp out: ' + FILE_BASENAME(o_fn)
+  log, 'subset by shapefile [O]: ', o_fn
 end

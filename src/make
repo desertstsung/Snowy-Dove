@@ -3,6 +3,8 @@
 ;$ /usr/local/exelis/idl/bin/idl ./make -arg /home/jtsung/snydov.sav
 ;-
 
+FILE_DELETE, COMMAND_LINE_ARGS(), /allow
+
 .RESET_SESSION
 
 .COMPILE addmeta

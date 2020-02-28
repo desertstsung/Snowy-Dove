@@ -40,6 +40,13 @@
 ; :History:
 ;    //v18.12.06 - v19.05.22: original version of project jiaotang//
 ;    v0.1-alpha: first version, date 2020/2/21
+;    v0.2-alpha: bug-fix of del image, date 2020/2/22
+;    v0.3-alpha: bug-fix of getdate from bip format ENVIRaster, date 2020/2/25
+;    v0.4-alpha: adjustion of log
+;                adjustion of mosaic and subset of gf6
+;                add wavelength if qac is not set
+;                use '_' instead of '.' in lon/lat in output fn
+;                date 2020/2/28
 ;
 ; :Author:
 ;    deserts Tsung (desertstsung@qq.com)
@@ -57,24 +64,31 @@ pro snyDov, i_dir, dem_fn = demFn, region = shpFn, $
     files = FILE_SEARCH(i_dir, '*.tar.gz')
     if ~files[0] then begin
       MESSAGE, 'no tgz file found in ' + i_dir, /INFORMATIONAL, /RESET
+      RETURN
     endif
   endif else begin
     MESSAGE, i_dir + ' is not a directory', /INFORMATIONAL, /RESET
+    RETURN
   endelse
 
   ;-----keywords setting check-----;
   if KEYWORD_SET(scale) && ~KEYWORD_SET(qac) then begin
     MESSAGE, 'scale without QUAC is NOT available', /INFORMATIONAL, /RESET
+    RETURN
   endif
 
   ;-----calibration coefficient and wavelength file check-----;
   currentProDir = FILE_DIRNAME(ROUTINE_FILEPATH())
   cal_fn = FILEPATH('snyDov_cal.json', root = currentProDir)
   wvl_fn = FILEPATH('snyDov_wvl.json', root = currentProDir)
-  if ~FILE_TEST(cal_fn) then $
+  if ~FILE_TEST(cal_fn) then begin
     MESSAGE, 'file for calibration not found', /INFORMATIONAL, /RESET
-  if ~FILE_TEST(wvl_fn) then $
+    RETURN
+  endif
+  if ~FILE_TEST(wvl_fn) then begin
     MESSAGE, 'file for wavelength-set not found', /INFORMATIONAL, /RESET
+    RETURN
+  endif
 
   ;-----filename of log-----;
   o_dir = i_dir + (STRMID(i_dir, STRLEN(i_dir)-1, 1) eq PATH_SEP() ? $
@@ -99,8 +113,9 @@ pro snyDov, i_dir, dem_fn = demFn, region = shpFn, $
   ;-----main procedure-----;
   foreach gz_fn, files do begin
 
-    info = (strTok(FILE_BASENAME(gz_fn), '_', /EXTRACT))[0:4]
-    o_fn = FILEPATH(STRJOIN(info, '_') + '_snyDov', root = o_dir)
+    info = (STRTOK(FILE_BASENAME(gz_fn), '_', /EXTRACT))[0:4]
+    o_fn = FILEPATH(STRJOIN([info[0:1], STRTOK(info[2], '.', /EXTRACT), $
+      STRTOK(info[3], '.', /EXTRACT), info[4]], '_') + '_snyDov', root = o_dir)
 
     flag = [(KEYWORD_SET(shpFn) ? shpFn : '0'), $
       (KEYWORD_SET(qac) ? '1' : '0'), (KEYWORD_SET(scale) ? '1' : '0')]
@@ -110,7 +125,7 @@ pro snyDov, i_dir, dem_fn = demFn, region = shpFn, $
       DEFSYSV, '!obj', oPMS(gz_fn, [info[0], info[1], $
         STRMID(info[4], 0, 4)], flag, o_fn)
       PMSHandler, demFn
-    ;WFV Handler, for gf1-wfv and gf6-wfv
+      ;WFV Handler, for gf1-wfv and gf6-wfv
     endif else if STRCMP(info[1], 'WFV', 3) then begin
 
       case info[0] of
@@ -136,7 +151,6 @@ pro snyDov, i_dir, dem_fn = demFn, region = shpFn, $
       fnNDVI = FILEPATH(FILE_BASENAME(o_fn) + '_NDVI', $
         root = FILE_DIRNAME(o_fn))
       ndviGenerate, o_fn, fnNDVI
-      log, 'output NDVI file: ' + fnNDVI
     endif
 
     ;convert ENVI format to GEOTIFF
@@ -144,10 +158,9 @@ pro snyDov, i_dir, dem_fn = demFn, region = shpFn, $
       fnTIFF = FILEPATH(FILE_BASENAME(o_fn) + '_TIFF.tiff', $
         root = FILE_DIRNAME(o_fn))
       ffConvert, o_fn, fnTIFF, wvl_fn, info[0:1]
-      log, 'output tiff file: ' + fnTIFF
     end
 
-    log, 'end processing ' + FILE_BASENAME(gz_fn, '.tar.gz'), /HEAD
+    log, 'end processing ', gz_fn, /HEAD
   endforeach
 
   (!e).close

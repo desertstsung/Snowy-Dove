@@ -6,7 +6,6 @@
 ;-
 pro rpcRedefine, fnImg
   compile_opt idl2, hidden
-  log, 'rpcRedefine initialize'
 
   ;get the rpc infomation text file
   fnRPB = STRMID(fnImg, 0, STRLEN(fnImg)-4) + 'rpb'
@@ -32,7 +31,6 @@ pro rpcRedefine, fnImg
   samNum = data[50:69] & samDen = data[70:89]
 
   FREE_LUN, lun
-  log, 'rpcRedefine read RPC data finish'
 
   ;reload rpc information
   sr = ENVIRPCRasterSpatialRef($
@@ -42,5 +40,5 @@ pro rpcRedefine, fnImg
   raster = !e.OpenRaster(fnImg, SPATIALREF_OVERRIDE = sr)
   raster.WriteMetadata
   raster.Close
-  log, 'rpcRedefine done'
+  log, 'RPC redefine done'
 end

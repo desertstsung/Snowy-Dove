@@ -8,7 +8,7 @@
 function timeEx, filename = FILENAME
   compile_opt idl2, hidden
 
-  asciiTime = strTok(SYSTIME(0), /EXTRACT)
+  asciiTime = STRTOK(SYSTIME(0), /EXTRACT)
   month = 1 + WHERE(STRUPCASE(asciiTime[1]) eq $
     ['JAN','FEB','MAR','APR', 'MAY', 'JUN', 'JUL', 'AUG','SEP','OCT','NOV','DEC'])
 

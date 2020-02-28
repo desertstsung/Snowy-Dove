@@ -6,8 +6,7 @@
 ;-
 pro quac, i_fn
   compile_opt idl2, hidden
-  log, 'quac initialize'
-  log, 'quac in: ' + FILE_BASENAME(i_fn)
+  log, 'QUAC [I]: ', i_fn
 
   ;get target filename
   if (!obj.flag)[2] eq '1' then begin
@@ -20,26 +19,22 @@ pro quac, i_fn
   addMeta, raster, 'Wavelength', !obj.wvl
   addMeta, raster, 'wavelength units', 'Nanometers'
   raster.Close
-  log, 'quac addWavelength done'
 
   ;envitask to apply QUAC
   inRaster = !e.OpenRaster(i_fn)
   Task = ENVITask('QUAC')
-  log, 'quac task ready'
   Task.INPUT_RASTER = inRaster
   Task.OUTPUT_RASTER_URI = o_fn
   Task.Execute
   Task.OUTPUT_RASTER.Close
   inRaster.Close
-  log, 'quac done'
-  log, 'quac out: ' + FILE_BASENAME(o_fn)
+  log, 'QUAC [O]: ', o_fn
 
   ;reduce the QUAC outcome to original scale range from 0-1
   if (!obj.flag)[2] eq '1' then begin
-    log, 'quac divide 10k initialize'
     i_fn = !obj.getLastFile()
     o_fn = (!obj.files)[0]
-    log, 'quac divide 10k in: ' + FILE_BASENAME(i_fn)
+    log, 'QUAC divide 10k [I]: ', i_fn
 
     orgRaster = !e.OpenRaster(i_fn)
     outRaster = ENVIRaster(URI = o_fn, $
@@ -48,7 +43,6 @@ pro quac, i_fn
     outRaster.Save
     outRaster.Close
     orgRaster.Close
-    log, 'quac divide 10k done'
-    log, 'quac divide 10k out: ' + FILE_BASENAME(o_fn)
+    log, 'QUAC divide 10k [O]: ', o_fn
   endif
 end

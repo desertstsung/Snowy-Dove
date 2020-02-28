@@ -10,6 +10,7 @@
 ;-
 pro ffConvert, i_fn, o_fn, wvl_fn, info
   compile_opt idl2, hidden
+  log, 'TIFF [I]: ', i_fn
 
   ;convert to tiff
   raster = !e.OpenRaster(i_fn)
@@ -23,4 +24,5 @@ pro ffConvert, i_fn, o_fn, wvl_fn, info
   addMeta, rasterTIFF, 'Wavelength', wvl
   addMeta, rasterTIFF, 'wavelength units', 'Nanometers'
   rasterTIFF.Close
+  log, 'TIFF [O]: ', o_fn
 end

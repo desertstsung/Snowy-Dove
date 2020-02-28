@@ -7,6 +7,7 @@
 ;-
 pro ndviGenerate, i_fn, o_fn
   compile_opt idl2, hidden
+  log, 'NDVI [I]: ', i_fn
 
   ;generate NDVI
   ENVI_OPEN_FILE, i_fn, r_fid = fid
@@ -19,4 +20,5 @@ pro ndviGenerate, i_fn, o_fn
   ;close files
   ENVI_FILE_MNG, id = fid, /REMOVE
   ENVI_FILE_MNG, id = ndid, /REMOVE
+  log, 'NDVI [O]: ', o_fn
 end

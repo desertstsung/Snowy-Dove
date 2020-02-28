@@ -24,44 +24,28 @@ pro WFV6Handler, dem_fn
     scenes_Ortho = [scenes_Ortho, scene_Ortho]
   endforeach
 
-  if (!obj.flag)[0] eq '0' then begin
-    imgs4Mosaic = scenes_Ortho
-    goto, mosaic__
-  endif
+  ;mosaic
+  if (!obj.flag)[0] eq '0' and $
+    (!obj.calGain)[0] eq -1 and $
+    (!obj.flag)[1] eq '0' then $
+    img_Mosaic = (!obj.files)[0] $
+  else begin
+    !obj.appendFile
+    img_Mosaic = !obj.getLastFile()
+  endelse
+  mosaicGF6, scenes_Ortho, img_Mosaic
 
-  ;shapefile subset
-  scenes_Sub = !NULL
-  foreach img, scenes_Ortho do begin
+  if (!obj.flag)[0] eq '0' then goto, radCal__
+
+  ;subset
+  if (!obj.calGain)[0] eq -1 and $
+    (!obj.flag)[1] eq '0' then $
+    img_Sub = (!obj.files)[0] $
+  else begin
     !obj.appendFile
     img_Sub = !obj.getLastFile()
-    subsetByShp, img, img_Sub
-    if FILE_TEST(img_Sub) then $
-      scenes_Sub = [scenes_Sub, img_Sub] $
-    else !obj._setLastFile, ''
-  endforeach
-  imgs4Mosaic = scenes_Sub
-
-  ;mosaic for gf6-wfv
-  mosaic__: begin
-    if N_ELEMENTS(imgs4Mosaic) le 1 then begin
-      if (!obj.calGain)[0] eq -1 and $
-        (!obj.flag)[1] eq '0' then begin
-        raster = !e.OpenRaster(imgs4Mosaic[0])
-        raster.Export, (!obj.files)[0], 'ENVI'
-        RETURN
-      endif
-      goto, radCal__
-    endif
-
-    if (!obj.calGain)[0] eq -1 and $
-      (!obj.flag)[1] eq '0' then $
-      img_Mosaic = (!obj.files)[0] $
-    else begin
-      !obj.appendFile
-      img_Mosaic = !obj.getLastFile()
-    endelse
-    mosaicGF6, imgs4Mosaic, img_Mosaic
-  end
+  endelse
+  subsetByShp, img_Mosaic, img_Sub
 
   ;radiance calibration
   radCal__: begin

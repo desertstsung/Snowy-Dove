@@ -6,12 +6,10 @@
 ;-
 pro gsSharpen, o_fn = r_fn
   compile_opt idl2, hidden
-  log, 'gsSharpen initialize'
 
   ;get the mss and pan filename
   !obj._getLast2, mss = mss_fn, pan = pan_fn
-  log, 'gsSharpen in: ' + FILE_BASENAME(mss_fn) $
-    + '  ' + FILE_BASENAME(pan_fn)
+  log, 'GS sharpen [I]: ', [mss_fn, pan_fn]
 
   ;get temporary filename
   if (!obj.flag)[1] eq '1' then begin
@@ -38,6 +36,5 @@ pro gsSharpen, o_fn = r_fn
   ENVI_FILE_MNG, id = bilId, /REMOVE
   ENVI_FILE_MNG, id = panId, /REMOVE
   r_fn = o_fn
-  log, 'gsSharpen done'
-  log, 'gsSharpen out: ' + FILE_BASENAME(o_fn)
+  log, 'GS sharpen [O]: ', o_fn
 end

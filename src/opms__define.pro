@@ -79,6 +79,12 @@ end
 pro oPMS::cleanup
   compile_opt idl2, hidden
 
+  ;add wavelength info if quac is not set
+  raster = !e.OpenRaster(self.files[0])
+  addMeta, raster, 'Wavelength', self.wvl
+  addMeta, raster, 'wavelength units', 'Nanometers'
+  raster.Close
+
   lastIndex = (WHERE(self.files ne ''))[-1]
 
   ;delete temp files
@@ -114,7 +120,7 @@ function oPMS::init, tgz_fn, info, flag, o_fn
   self.flag = flag
   self.files[0] = o_fn
 
-  log, 'start processing ' + FILE_BASENAME(tgz_fn, '.tar.gz'), /HEAD
+  log, 'start processing ', tgz_fn, /HEAD
   log, 'gain coefficient: ' + STRJOIN(STRING(calGain, for='(F6.4)'), ' ')
   log, 'offset coefficient: ' + STRJOIN(STRING(calOffs, for='(F6.4)'), ' ')
   log, 'wavelength: ' + STRJOIN(STRING(wvl, for='(I3)'), ' ')
