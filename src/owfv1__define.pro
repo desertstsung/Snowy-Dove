@@ -59,6 +59,8 @@ pro oWFV1::cleanup
   raster = !e.OpenRaster(self.files[0])
   addMeta, raster, 'Wavelength', self.wvl
   addMeta, raster, 'wavelength units', 'Nanometers'
+  common blk, pymd
+  if pymd then raster.CreatePyramid
   raster.Close
 
   lastIndex = (WHERE(self.files ne ''))[-1]
@@ -67,7 +69,7 @@ pro oWFV1::cleanup
   log, 'delete temp files'
   
   FILE_DELETE, self.imgDir, /RECURSIVE
-  log, 'delete original image directory'
+  log, 'delete unzip directory'
   self->IDL_Object::Cleanup
 end
 
@@ -92,7 +94,7 @@ function oWFV1::init, tgz_fn, info, flag, o_fn
   log, 'offset coefficient: ' + STRJOIN(STRING(calOffs, for='(F6.4)'), ' ')
   log, 'wavelength: ' + STRJOIN(STRING(wvl, for='(I3)'), ' ')
   if flag[0] ne '0' then log, 'region for subset: ' + flag[0]
-  log, 'quac flag: ' + STRJOIN(flag[1:2])
+  log, 'quac flag: ' + flag[1]
 
   RETURN, 1B
 end
@@ -105,6 +107,6 @@ pro oWFV1__define
     calGain: MAKE_ARRAY(4, /DOUBLE), $
     calOffs: MAKE_ARRAY(4, /DOUBLE), $
     wvl: MAKE_ARRAY(4, /L64), $
-    flag: MAKE_ARRAY(3, /STRING), $
+    flag: MAKE_ARRAY(2, /STRING), $
     files: MAKE_ARRAY(5, /STRING)}
 end

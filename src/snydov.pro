@@ -9,22 +9,23 @@
 ;    IDL8.3/ENVI5.1 or later
 ;
 ; :Usage:
-;    snyDov, i_dir [, dem_fn = string] [, region = string] [, /QAC] [, /SCALE] [, /TIFF] [, /NDVI]
+;    snyDov, i_dir [, dem = string] [, region = string] [, /QAC] [, /TIFF] [, /NDVI] [, /PYRAMID] [, /CONSOLEPRINT]
 ;    or simply
-;    snydov, i_dir [, d = string] [, r = string] [, /q] [, /s] [, /t] [, /n]
+;    snydov, i_dir [, d = string] [, r = string] [, /q] [, /t] [, /n] [, /p] [, /c]
 ;
 ; :Arguments:
-;    i_dir:  string of directory path which include original gz files to process
+;    i_dir:  string of directory path which include original tar.gz files to process
 ;
 ; :Params:
 ;    dem_fn: string of DEM filename to orthorectify imagery, using GMTED2010.jp2 for default
-;    region: string of shapefile or ROI filename to subset the imagery
+;    region: string of shapefile to subset the imagery
 ;
 ; :Keywords:
-;    qac:   apply quick atmospheric correction
-;    scale: reduce the QUAC outcome to original scale range from 0-1
-;    tiff:  convert the default ENVI format to tiff format
-;    ndvi:  get an extra NDVI raster in ENVI format
+;    qac:     perform quick atmospheric correction
+;    scale:   reduce the QUAC outcome to original scale range from 0-1
+;    tiff:    convert the default ENVI format to tiff format
+;    ndvi:    get an extra NDVI raster in ENVI format
+;    pyramid: create pyramid of result raster
 ;
 ; :Examples:
 ;    snyDov, '/home/jtsung/Downloads/testData4SnowyDove'
@@ -47,17 +48,27 @@
 ;                add wavelength if qac is not set
 ;                use '_' instead of '.' in lon/lat in output fn
 ;                date 2020/2/28
+;    v0.5-alpha: update the method of rpc redefine
+;                update the method of adding hdr to a tiff file
+;                add pyramid keyword
+;                remove file 'make' and add file 'run'
+;                adjustion of del image
+;                del scale keyword
+;                date 2020/3/5
 ;
 ; :Author:
 ;    deserts Tsung (desertstsung@qq.com)
 ;    Chengdu University of Information Technology
 ;-
-pro snyDov, i_dir, dem_fn = demFn, region = shpFn, $
-  qac = QAC, scale = SCALE, tiff = TIFF, ndvi = NDVI
+pro snyDov, i_dir, dem = demFn, region = shpFn, $
+  qac = QAC, tiff = TIFF, ndvi = NDVI, $
+  pyramid = PYRAMID, consoleprint = CONSOLEPRINT
   compile_opt idl2, hidden
-
   ON_ERROR, 2
-  c = tic('snyDov')
+
+  common blk, pymd, cslprt
+  pymd = KEYWORD_SET(pyramid) ? 1B : 0B
+  cslprt = KEYWORD_SET(CONSOLEPRINT) ? 1B : 0B
 
   ;-----input directory check-----;
   if FILE_TEST(i_dir, /DIRECTORY) then begin
@@ -70,12 +81,6 @@ pro snyDov, i_dir, dem_fn = demFn, region = shpFn, $
     MESSAGE, i_dir + ' is not a directory', /INFORMATIONAL, /RESET
     RETURN
   endelse
-
-  ;-----keywords setting check-----;
-  if KEYWORD_SET(scale) && ~KEYWORD_SET(qac) then begin
-    MESSAGE, 'scale without QUAC is NOT available', /INFORMATIONAL, /RESET
-    RETURN
-  endif
 
   ;-----calibration coefficient and wavelength file check-----;
   currentProDir = FILE_DIRNAME(ROUTINE_FILEPATH())
@@ -101,14 +106,14 @@ pro snyDov, i_dir, dem_fn = demFn, region = shpFn, $
   DEFSYSV, '!log_fn', FILEPATH(timeEx(/FILENAME) + '.log', root = o_dir), 1
 
   DLM_LOAD, 'XML', 'SHAPEFILE', 'JPEG2000', 'JPEG', 'PNG', $
-    'TIFF', 'GDAL', 'MAP_PE', 'NATIVE'
+    'TIFF', 'GDAL', 'MAP_PE', 'NATIVE', 'JPIP'
   DEFSYSV, '!e', ENVI(/HEADLESS), 1
   if ~KEYWORD_SET(demFn) then begin
     demFn = FILEPATH('GMTED2010.jp2', root = !e.root_dir, sub = 'data')
   endif
 
-  PRINT, '----------  snowy dove is flying'
-  PRINT, '----------  log file: ' + !log_fn
+  PRINT, timeEx() + ' snowy dove is flying'
+  PRINT, timeEx() + ' log file: ' + !log_fn
 
   ;-----main procedure-----;
   foreach gz_fn, files do begin
@@ -118,7 +123,7 @@ pro snyDov, i_dir, dem_fn = demFn, region = shpFn, $
       STRTOK(info[3], '.', /EXTRACT), info[4]], '_') + '_snyDov', root = o_dir)
 
     flag = [(KEYWORD_SET(shpFn) ? shpFn : '0'), $
-      (KEYWORD_SET(qac) ? '1' : '0'), (KEYWORD_SET(scale) ? '1' : '0')]
+      (KEYWORD_SET(qac) ? '1' : '0')]
 
     ;PMS Handler, for gf1-pms, gf1b/c/d-pms, gf2-pms, gf6-pms
     if STRCMP(info[1], 'PMS', 3) then begin
@@ -153,7 +158,7 @@ pro snyDov, i_dir, dem_fn = demFn, region = shpFn, $
       ndviGenerate, o_fn, fnNDVI
     endif
 
-    ;convert ENVI format to GEOTIFF
+    ;convert ENVI format to GeoTIFF
     if KEYWORD_SET(tiff) then begin
       fnTIFF = FILEPATH(FILE_BASENAME(o_fn) + '_TIFF.tiff', $
         root = FILE_DIRNAME(o_fn))
@@ -164,6 +169,5 @@ pro snyDov, i_dir, dem_fn = demFn, region = shpFn, $
   endforeach
 
   (!e).close
-  toc, c
-  PRINT, '----------  thanks for using'
+  PRINT, timeEx() + ' thanks for using'
 end

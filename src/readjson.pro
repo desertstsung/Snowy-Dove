@@ -23,7 +23,7 @@ function readJSON, i_fn, key = key
 
       t = (fullJSON[key[0]])[key[1]]
       if t.HasKey(key[2]) then $
-        r = (((fullJSON[key[0]])[key[1]])[key[2]])[key[3]] $
+        r = FLOAT((((fullJSON[key[0]])[key[1]])[key[2]])[key[3]]) $
       else RETURN, -1
 
     end

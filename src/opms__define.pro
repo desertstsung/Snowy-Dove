@@ -83,6 +83,8 @@ pro oPMS::cleanup
   raster = !e.OpenRaster(self.files[0])
   addMeta, raster, 'Wavelength', self.wvl
   addMeta, raster, 'wavelength units', 'Nanometers'
+  common blk, pymd
+  if pymd then raster.CreatePyramid
   raster.Close
 
   lastIndex = (WHERE(self.files ne ''))[-1]
@@ -93,7 +95,7 @@ pro oPMS::cleanup
 
   ;delete unpack image directory
   FILE_DELETE, self.imgDir, /RECURSIVE
-  log, 'delete original image directory'
+  log, 'delete unzip directory'
   self->IDL_Object::Cleanup
 end
 
@@ -101,7 +103,7 @@ end
 ; example arguments to initialize oPMS
 ;   tgz_fn: '/home/ds/GF6_PMS_E111.6_N32.8_20190318_L1A1119857678.tar.gz'
 ;   info:   ['GF6', 'PMS', '2019']
-;   flag:   ['/home/ds/shapefile.shp', '1', '0']
+;   flag:   ['/home/ds/shapefile.shp', '1']
 ;   o_fn:   '/home/ds/snowyDove/GF6_PMS_E111.6_N32.8_20190318.dat'
 ;-
 function oPMS::init, tgz_fn, info, flag, o_fn
@@ -125,7 +127,7 @@ function oPMS::init, tgz_fn, info, flag, o_fn
   log, 'offset coefficient: ' + STRJOIN(STRING(calOffs, for='(F6.4)'), ' ')
   log, 'wavelength: ' + STRJOIN(STRING(wvl, for='(I3)'), ' ')
   if flag[0] ne '0' then log, 'region for subset: ' + flag[0]
-  log, 'quac flag: ' + STRJOIN(flag[1:2])
+  log, 'quac flag: ' + flag[1]
 
   RETURN, 1B
 end
@@ -138,6 +140,6 @@ pro oPMS__define
     calGain: MAKE_ARRAY(5, /DOUBLE), $
     calOffs: MAKE_ARRAY(5, /DOUBLE), $
     wvl: MAKE_ARRAY(4, /L64), $
-    flag: MAKE_ARRAY(3, /STRING), $
+    flag: MAKE_ARRAY(2, /STRING), $
     files: MAKE_ARRAY(9, /STRING)}
 end

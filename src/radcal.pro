@@ -24,11 +24,12 @@ pro radCal, i_fn, o_fn
     addMeta, inRaster, 'data offset values', !obj.calOffs
   endelse
 
-  ;envitask to apply calibration
+  ;envitask to perform calibration
   task = ENVITask('RadiometricCalibration')
   task.Input_Raster = inRaster
   task.Output_Raster_URI = o_fn
   task.Execute
   inRaster.Close
+
   log, 'radiance calibration [O]: ', o_fn
 end

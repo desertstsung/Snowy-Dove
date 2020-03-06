@@ -1,20 +1,18 @@
 ;+
-; procedure to add/update a tag in a raster's metadata
+; procedure to add/update metadata to a raster
 ;
 ; :Arguments:
-;   raster: ENVIRaster object to change metadata
-;   tag:    tag name string
-;   val:    value of the certain tag
+;   iRaster: input ENVIRaster object
+;   tag:     string name of metadata
+;   val:     value of certain tag
 ;-
-pro addMeta, raster, tag, val
+pro addMeta, iRaster, tag, val
   compile_opt idl2, hidden
 
-  upper = STRUPCASE(tag)
-  lower = STRLOWCASE(tag)
-
-  if TOTAL(raster.Metadata.Tags eq upper) then $
-    raster.Metadata.UpdateItem, lower, val $
-  else raster.Metadata.AddItem, lower, val
-
-  raster.WriteMetadata
+  meta = iRaster.METADATA
+  tags = meta.TAGS
+  if TOTAL(tags eq STRUPCASE(tag)) eq 1 then $
+    meta.UpdateItem, STRLOWCASE(tag), val $
+  else meta.AddItem, STRLOWCASE(tag), val
+  iRaster.WriteMetadata
 end

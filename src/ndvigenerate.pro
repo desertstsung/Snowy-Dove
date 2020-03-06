@@ -2,8 +2,8 @@
 ; procedure to produce an extra DNVI raster
 ;
 ; :Arguments:
-;   i_fn: filename to produce NDVI
-;   o_fn: target raster filename
+;   i_fn: filename of original raster to produce NDVI
+;   o_fn: filename of target NDVI raster
 ;-
 pro ndviGenerate, i_fn, o_fn
   compile_opt idl2, hidden
@@ -20,5 +20,14 @@ pro ndviGenerate, i_fn, o_fn
   ;close files
   ENVI_FILE_MNG, id = fid, /REMOVE
   ENVI_FILE_MNG, id = ndid, /REMOVE
+
+  ;create pyramid
+  common blk, pymd
+  if pymd then begin
+    raster = !e.OpenRaster(o_fn)
+    raster.CreatePyramid
+    raster.Close
+  endif
+
   log, 'NDVI [O]: ', o_fn
 end

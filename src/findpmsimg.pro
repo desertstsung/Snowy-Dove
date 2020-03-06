@@ -16,7 +16,7 @@ pro findPMSImg, mss_image = mssImage, pan_image = panImage
       mssImage = imgs[WHERE(STRPOS(imgs, panImage) eq -1)]
     end
 
-    ;gf1b/c/d-pms have 6images
+    ;gf1b/c/d-pms have 6 images
     6: begin
       panImage = imgs[WHERE(STRPOS(imgs, 'PAN.') ne -1)]
       mssImage = imgs[WHERE(STRPOS(imgs, 'MUX.') ne -1)]

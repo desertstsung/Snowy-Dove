@@ -11,34 +11,35 @@ pro rpcRedefine, fnImg
   fnRPB = STRMID(fnImg, 0, STRLEN(fnImg)-4) + 'rpb'
   str = '' & data = []
 
-  OPENR, lun, fnRPB, /GET_LUN
+  OPENR, lun_rpb, fnRPB, /GET_LUN
 
   ;read useful information
   i = 0L & lineIndex = [17, 38, 59, 80]
-  while ~EOF(lun) do begin
-    READF, lun, str
+  while ~EOF(lun_rpb) do begin
+    READF, lun_rpb, str
     if i ge 6 and i le 15 then begin
-      data = [data, DOUBLE(STREGEX(str, '-*[0-9]+.[0-9]+', /EXTRACT))]
+      data = [data, STREGEX(str, '-*[0-9]+.[0-9]+', /EXTRACT)]
     endif else if TOTAL((i ge lineIndex) and (i le (lineIndex + 19))) eq 1 then begin
-      data = [data, DOUBLE(STREGEX(str, '[+-][0-9]+.[0-9]+E[+-][0-9][0-9]', /EXTRACT))]
+      data = [data, STREGEX(str, '[+-][0-9]+.[0-9]+E[+-][0-9][0-9]', /EXTRACT)]
     endif
     i++
   endwhile
-
-  ;set value to variable
-  offset = data[0:4] & scale = data[5:9]
-  linNum = data[10:29] & linDen = data[30:49]
-  samNum = data[50:69] & samDen = data[70:89]
-
-  FREE_LUN, lun
+  data = STRJOIN(data, ', ')
+  FREE_LUN, lun_rpb
 
   ;reload rpc information
-  sr = ENVIRPCRasterSpatialRef($
-    rpc_line_den_coeff = linDen, rpc_line_num_coeff = linNum, $
-    rpc_samp_den_coeff = samDen, rpc_samp_num_coeff = samNum, $
-    rpc_offsets = offset, rpc_scales = scale)
-  raster = !e.OpenRaster(fnImg, SPATIALREF_OVERRIDE = sr)
-  raster.WriteMetadata
-  raster.Close
+  fnHDR = STRMID(fnImg, 0, STRLEN(fnImg)-4) + 'hdr'
+  tmp = QUERY_TIFF(fnImg, info)
+  OPENW,  lun_hdr, fnHDR, /GET_LUN
+  PRINTF, lun_hdr, 'ENVI'
+  PRINTF, lun_hdr, 'samples = ' + STRTRIM(STRING(info.DIMENSIONS[0]), 2)
+  PRINTF, lun_hdr, 'lines = ' + STRTRIM(STRING(info.DIMENSIONS[1]), 2)
+  PRINTF, lun_hdr, 'bands = ' + STRTRIM(STRING(info.CHANNELS), 2)
+  PRINTF, lun_hdr, 'data type = ' + STRTRIM(STRING(info.PIXEL_TYPE), 2)
+  PRINTF, lun_hdr, 'interleave = bip'
+  PRINTF, lun_hdr, 'file type = TIFF'
+  PRINTF, lun_hdr, 'rpc info = { ' + data + ' }'
+  FREE_LUN, lun_HDR
+  
   log, 'RPC redefine done'
 end

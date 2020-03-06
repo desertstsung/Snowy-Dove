@@ -1,0 +1,55 @@
+;+
+;USAGE EXAMPLE UNDER LINUX
+;$ idl ./run -args /home/jtsung/tds /pyramid r=/home/jtsung/ds/shp/test_geog.shp /tiff /Q
+;-
+
+.COMPILE snydov
+.COMPILE opms__define, owfv1__define, owfv6__define
+.COMPILE pmshandler, wfv1handler, wfv6handler
+.COMPILE addmeta, delimg, findpmsimg, log, readjson, timeex
+.COMPILE ffconvert, gssharpen, mosaicgf6, ndvigenerate, quac
+.COMPILE radcal, rpcortho, rpcredefine, subsetbyshp, unzip
+
+RESOLVE_ALL, /CONTINUE_ON_ERROR, SKIP_ROUTINES = 'envi'
+
+args = COMMAND_LINE_ARGS()
+errorMsg = 'Invalid number of arguments, try to use region=fn instead of region = fn'
+if N_ELEMENTS(args) gt 8 then PRINT, STRJOIN(MAKE_ARRAY(STRLEN(errorMsg)+12, val = '*', /STRING))
+if N_ELEMENTS(args) gt 8 then PRINT, '***** ' + errorMsg + ' *****'
+if N_ELEMENTS(args) gt 8 then PRINT, STRJOIN(MAKE_ARRAY(STRLEN(errorMsg)+12, val = '*', /STRING))
+if N_ELEMENTS(args) gt 8 then exit
+
+dir = args[WHERE(FILE_TEST(args, /DIRECTORY) eq 1)]
+
+index_dem = STRPOS(STRLOWCASE(args), 'dem=')
+foreach index, index_dem, i do index_dem[i] = index_dem[i] ne -1 ? 1 : 0
+dem = TOTAL(index_dem) eq 1 ? STRMID(args[WHERE(index_dem eq 1)], 4) : !NULL
+index_d = STRPOS(STRLOWCASE(args), 'd=')
+foreach index, index_d, i do index_d[i] = index_d[i] ne -1 ? 1 : 0
+if dem eq !NULL then dem = TOTAL(index_d) eq 1 ? STRMID(args[WHERE(index_d eq 1)], 2) : !NULL
+
+index_shp = STRPOS(STRLOWCASE(args), 'region=')
+foreach index, index_shp, i do index_shp[i] = index_shp[i] ne -1 ? 1 : 0
+shp = TOTAL(index_shp) eq 1 ? STRMID(args[WHERE(index_shp eq 1)], 7) : !NULL
+index_r = STRPOS(STRLOWCASE(args), 'r=')
+foreach index, index_r, i do index_r[i] = index_r[i] ne -1 ? 1 : 0
+if shp eq !NULL then shp = TOTAL(index_r) eq 1 ? STRMID(args[WHERE(index_r eq 1)], 2) : !NULL
+
+tiff = TOTAL(STRCMP(STRLOWCASE(args), '/tiff')) eq 1 ? 1B : !NULL
+if tiff eq !NULL then tiff = TOTAL(STRCMP(STRLOWCASE(args), '/t')) eq 1 ? 1B : !NULL
+ndvi = TOTAL(STRCMP(STRLOWCASE(args), '/ndvi')) eq 1 ? 1B : !NULL
+if ndvi eq !NULL then ndvi = TOTAL(STRCMP(STRLOWCASE(args), '/n')) eq 1 ? 1B : !NULL
+qac = TOTAL(STRCMP(STRLOWCASE(args), '/qac')) eq 1 ? 1B : !NULL
+if qac eq !NULL then qac = TOTAL(STRCMP(STRLOWCASE(args), '/q')) eq 1 ? 1B : !NULL
+pyramid = TOTAL(STRCMP(STRLOWCASE(args), '/pyramid')) eq 1 ? 1B : !NULL
+if pyramid eq !NULL then pyramid = TOTAL(STRCMP(STRLOWCASE(args), '/p')) eq 1 ? 1B : !NULL
+csl = TOTAL(STRCMP(STRLOWCASE(args), '/consoleprint')) eq 1 ? 1B : !NULL
+if csl eq !NULL then csl = TOTAL(STRCMP(STRLOWCASE(args), '/c')) eq 1 ? 1B : !NULL
+
+snyDov, dir, dem = dem, region = shp, qac = qac, tiff = tiff, ndvi = ndvi, pyramid = pyramid, consoleprint = csl
+
+.FULL_RESET_SESSION
+PRINT, '********************'
+PRINT, '***** exit IDL *****'
+PRINT, '********************'
+exit

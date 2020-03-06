@@ -15,9 +15,9 @@ function timeEx, filename = FILENAME
   timeStr = ''
   timeStr += asciiTime[4]
   timeStr += '-' + STRING(month, for = '(I02)')
-  timeStr += '-' + asciiTime[2]
+  timeStr += '-' + STRING(asciiTime[2], for = '(I02)')
   if KEYWORD_SET(FILENAME) then begin
-    timeStr += '_' + STRJOIN(strTok(asciiTime[3], ':', /EXTRACT))
+    timeStr += '_' + STRJOIN(STRTOK(asciiTime[3], ':', /EXTRACT))
     RETURN, timeStr
   endif else begin
     timeStr += ' ' + asciiTime[3]

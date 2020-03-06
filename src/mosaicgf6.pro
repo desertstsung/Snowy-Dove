@@ -28,7 +28,10 @@ pro mosaicGF6, imgs, o_fn
       scene.Close
     endelse
   endforeach
-  if N_ELEMENTS(fn) eq 0 then RETURN
+  if N_ELEMENTS(fn) eq 0 then begin
+    log, 'shapefile does not match the input raster'
+    RETURN
+  endif
   
   log, 'mosaic GF6 [I]: ', fn
 

@@ -11,7 +11,7 @@ pro gsSharpen, o_fn = r_fn
   !obj._getLast2, mss = mss_fn, pan = pan_fn
   log, 'GS sharpen [I]: ', [mss_fn, pan_fn]
 
-  ;get temporary filename
+  ;get output filename
   if (!obj.flag)[1] eq '1' then begin
     !obj.appendFile
     o_fn = !obj.getLastFile()

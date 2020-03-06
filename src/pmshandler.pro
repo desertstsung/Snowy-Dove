@@ -16,7 +16,8 @@ pro PMSHandler, dem_fn
 
   ;gf6 need to reload spatial reference
   ;in order to do RPC Orthorectification
-  rpcRedefine, mssImg & rpcRedefine, panImg
+  rpcRedefine, mssImg
+  rpcRedefine, panImg
 
   ;rpc orthorectify
   rpcOrtho__: begin
@@ -33,7 +34,10 @@ pro PMSHandler, dem_fn
   !obj._getLast2, mss = mss_Sub, pan = pan_Sub
   subsetByShp, mss_Ortho, mss_Sub
   subsetByShp, pan_Ortho, pan_Sub
-  if ~FILE_TEST(mss_Sub) or ~FILE_TEST(mss_Sub) then RETURN
+  if ~FILE_TEST(mss_Sub) or ~FILE_TEST(mss_Sub) then begin
+    log, 'shapefile does not match the input raster'
+    RETURN
+  endif
 
   ;radiance calibration
   radCal__: begin

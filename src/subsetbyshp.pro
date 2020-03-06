@@ -31,7 +31,10 @@ pro subsetByShp, i_fn, o_fn
   endif else if STRCMP(shp_cs_str, 'PROJCS', 6) then begin
     shp_cs.ConvertMapToMap, verts[0, *], $
       verts[1, *], mapx, mapy, raster_cs
-  endif else RETURN
+  endif else begin
+    log, 'current shapefile not supported'
+    RETURN
+  endelse
 
   ;get the extent of the shapefile inside the raster
   raster_sr = raster.SpatialRef

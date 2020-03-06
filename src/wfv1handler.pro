@@ -36,7 +36,10 @@ pro WFV1Handler, dem_fn
     img_Sub = !obj.getLastFile()
   endelse
   subsetByShp, img_Ortho, img_Sub
-  if ~FILE_TEST(img_Sub) then RETURN
+  if ~FILE_TEST(img_Sub) then begin
+    log, 'current shapefile not supported'
+    RETURN
+  endif
 
   ;radiance calibration
   radCal__: begin
