@@ -25,6 +25,7 @@ IDL> snydov, i_dir, d = dem_fn, r = shapefile, /q, /t, /n, /p, /c
 - ``QAC(optional)``:          keyword to apply QUAC
 - ``TIFF(optional)``:         keyword to convert default ENVI format to TIFF format
 - ``NDVI(optional)``:         keyword to get an extra NDVI result
+- ``PYRAMID(optional)``:      keyword to build ``.enp`` file for outcome
 - ``CONSOLEPRINT(optional)``: keyword to print step in IDL console or terminal
 # Notice
 - IDL8.3/ENVI5.1 or later is required
