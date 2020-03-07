@@ -15,7 +15,6 @@ $ wget https://github.com/desertstsung/Snowy-Dove/releases/download/v1.0/v1_0.zi
 $ unzip ./v1_0.zip
 $ cd ./v1_0
 $ idl # recommended, or idlde
-IDL> .compile snydov
 IDL> snydov, i_dir, dem = dem_fn, region = shapefile, /QAC, /TIFF, /NDVI, /PYRAMID, /CONSOLEPRINT
 IDL> ; or simply typing:
 IDL> snydov, i_dir, d = dem_fn, r = shapefile, /q, /t, /n, /p, /c
