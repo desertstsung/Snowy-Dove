@@ -11,7 +11,7 @@ $ idl ./run -args i_dir d=dem_fn r=shapefile /q /t /n /p /c
 ```
 ## using saved binary file in IDL (workbench)
 ```shell
-$ wget https://github.com/desertstsung/Snowy-Dove/releases/download/v1.0/v1.0.zip
+$ wget https://github.com/desertstsung/Snowy-Dove/releases/download/v1.0/v1_0.zip
 $ unzip ./v1_0.zip
 $ cd ./v1_0
 $ idl # recommended, or idlde
