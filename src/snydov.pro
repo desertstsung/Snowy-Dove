@@ -48,13 +48,13 @@
 ;                add wavelength if qac is not set
 ;                use '_' instead of '.' in lon/lat in output fn
 ;                date 2020/2/28
-;    v0.5-alpha: update the method of rpc redefine
-;                update the method of adding hdr to a tiff file
-;                add pyramid keyword
-;                remove file 'make' and add file 'run'
-;                adjustion of del image
-;                del scale keyword
-;                date 2020/3/5
+;    v1.0: update the method of rpc redefine
+;          update the method of adding hdr to a tiff file
+;          add pyramid keyword
+;          remove file 'make' and add file 'run'
+;          adjustion of del image
+;          del scale keyword
+;          date 2020/3/7
 ;
 ; :Author:
 ;    deserts Tsung (desertstsung@qq.com)
