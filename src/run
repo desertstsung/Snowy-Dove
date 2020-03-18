@@ -7,8 +7,8 @@
 .COMPILE opms__define, owfv1__define, owfv6__define
 .COMPILE pmshandler, wfv1handler, wfv6handler
 .COMPILE addmeta, delimg, findpmsimg, log, readjson, timeex
-.COMPILE ffconvert, gssharpen, mosaicgf6, ndvigenerate, quac
-.COMPILE radcal, rpcortho, rpcredefine, subsetbyshp, unzip
+.COMPILE ffconvert, rpcortho, mosaicgf6, ndvigenerate, quac
+.COMPILE radcal, gssharpen, rpcredefine, subsetbyshp, unzip
 
 RESOLVE_ALL, /CONTINUE_ON_ERROR, SKIP_ROUTINES = 'envi'
 
