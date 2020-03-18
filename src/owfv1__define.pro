@@ -4,6 +4,12 @@
 ;-
 ;oWFV1 define is similar to oPMS
 
+pro oWFV1::addTIFFExtension, fn
+  compile_opt idl2, hidden
+
+  self.files[WHERE(self.files eq fn)] += '.tiff'
+end
+
 pro oWFV1::appendFile
   compile_opt idl2, hidden
 

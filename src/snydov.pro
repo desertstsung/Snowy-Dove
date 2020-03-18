@@ -151,6 +151,8 @@ pro snyDov, i_dir, dem = demFn, region = shpFn, $
       MESSAGE, 'not supported', /INFORMATIONAL, /CONTINUE
     endelse
 
+    o_fn = FILE_TEST(o_fn) ? o_fn : o_fn + '.tiff'
+
     ;NDVI generate
     if KEYWORD_SET(ndvi) then begin
       fnNDVI = FILEPATH(FILE_BASENAME(o_fn) + '_NDVI', $
@@ -160,8 +162,12 @@ pro snyDov, i_dir, dem = demFn, region = shpFn, $
 
     ;convert ENVI format to GeoTIFF
     if KEYWORD_SET(tiff) then begin
-      fnTIFF = FILEPATH(FILE_BASENAME(o_fn) + '_TIFF.tiff', $
-        root = FILE_DIRNAME(o_fn))
+      if STRMID(o_fn, 4, /REVERSE_OFFSET) ne '.tiff' then begin
+        fnTIFF = FILEPATH(FILE_BASENAME(o_fn) + '_TIFF.tiff', $
+          root = FILE_DIRNAME(o_fn))
+      endif else begin
+        fnTIFF = o_fn
+      endelse
       ffConvert, o_fn, fnTIFF, wvl_fn, info[0:1]
     end
 

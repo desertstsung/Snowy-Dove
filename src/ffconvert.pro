@@ -12,11 +12,13 @@ pro ffConvert, i_fn, o_fn, wvl_fn, info
   compile_opt idl2, hidden
   log, 'ENVI2TIFF [I]: ', i_fn
 
-  ;convert to tiff
-  raster = !e.OpenRaster(i_fn)
-  raster.Export, o_fn, 'tiff', inter = 'bip'
-  raster.Close
-  delImg, i_fn
+  if i_fn ne o_fn then begin
+    ;convert to tiff
+    raster = !e.OpenRaster(i_fn)
+    raster.Export, o_fn, 'tiff', inter = 'bip'
+    raster.Close
+    delImg, i_fn
+  endif
 
   ;add wavelength in order to load true color or CIR easily
   wvl = STRJOIN(STRTRIM(STRING(readJSON(wvl_fn, key = info)), 2), ',')

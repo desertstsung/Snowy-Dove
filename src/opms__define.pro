@@ -3,6 +3,16 @@
 ; date 2020/2/11
 ;-
 
+;if use python+osgeo to perform
+;rpc orthorectification or/and
+;pan sharpen, its output
+;fileformat is GeoTiff
+pro oPMS::addTIFFExtension, fn
+  compile_opt idl2, hidden
+
+  self.files[WHERE(self.files eq fn)] += '.tiff'
+end
+
 ;get temporary filename
 pro oPMS::appendFile, twoTime = TWOTIME
   compile_opt idl2, hidden
