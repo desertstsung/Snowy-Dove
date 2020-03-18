@@ -55,7 +55,7 @@
 ;          adjustion of del image
 ;          del scale keyword
 ;          date 2020/3/7
-;    v1.1-alpha: add python3 script to perform rpc warp and pan sharpen
+;    v1.1-alpha: add python script to perform rpc warp and pan sharpen
 ;                date 2020/3/18
 ;
 ; :Author:
