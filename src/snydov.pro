@@ -57,6 +57,7 @@
 ;          date 2020/3/7
 ;    v1.1-alpha: add python script to perform rpc warp and pan sharpen
 ;                date 2020/3/18
+;    v1.2-alpha: use py<step>.py instead of py<step>.pyc
 ;
 ; :Author:
 ;    deserts Tsung (desertstsung@qq.com)
