@@ -23,7 +23,7 @@ pro rpcOrtho, i_fn, dem, o_fn
   if pyFlag or py3Flag then begin
 
     script = pyFlag ? 'python ' : 'python3 '
-    script += FILEPATH('pyortho.pyc', root = FILE_DIRNAME(ROUTINE_FILEPATH())) + ' '
+    script += FILEPATH('pyortho.py', root = FILE_DIRNAME(ROUTINE_FILEPATH())) + ' '
     script += i_fn + ' ' + dem + ' ' + o_fn + '.tiff'
     SPAWN, script, msg, err
     

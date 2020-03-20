@@ -20,7 +20,7 @@ pro gsSharpen, o_fn = r_fn
 
   if pyFlag or py3Flag then begin
     script = pyFlag ? 'python ' : 'python3 '
-    script += FILEPATH('pysharpen.pyc', root = FILE_DIRNAME(ROUTINE_FILEPATH())) + ' '
+    script += FILEPATH('pysharpen.py', root = FILE_DIRNAME(ROUTINE_FILEPATH())) + ' '
     script += mss_fn + ' '  + pan_fn + ' ' + o_fn + '.tiff'
     SPAWN, script, msg, err
 
