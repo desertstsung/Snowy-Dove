@@ -6,10 +6,14 @@
 ;-
 pro quac, i_fn
   compile_opt idl2, hidden
+  common blkScl, sclSet
   log, 'QUAC [I]: ', i_fn
 
   ;get target filename
-  o_fn = (!obj.files)[0]
+  if sclSet then begin
+    !obj.appendFile
+    o_fn = !obj.getLastFile()
+  endif else o_fn = (!obj.files)[0]
 
   ;envitask to apply QUAC
   inRaster = !e.OpenRaster(i_fn)
@@ -22,4 +26,15 @@ pro quac, i_fn
   Task.OUTPUT_RASTER.Close
   inRaster.Close
   log, 'QUAC [O]: ', o_fn
+
+  ; quac = quac / 10000.0
+  if sclSet then begin
+    log, 'QUAC scale to original factor [I]: ', o_fn
+
+    readHeader, o_fn, nb = nb
+
+    sd_radcal, o_fn, (!obj.files)[0], FLTARR(nb) + 0.0001E, FLTARR(nb)
+
+    log, 'QUAC scale to original factor [O]: ', (!obj.files)[0]
+  endif
 end

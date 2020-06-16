@@ -9,7 +9,7 @@
 ;-
 pro log, i_str, IOfn, head = HEAD
   compile_opt idl2, hidden
-  common blk, pymd, cslprt
+  common blk, null, cslprt
 
   OPENW, ll, !log_fn, /GET_LUN, /APPEND
 

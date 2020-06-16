@@ -1,0 +1,148 @@
+;+
+;USAGE EXAMPLE UNDER MACOS OR LINUX
+;$ idl ./run.src -args /home/jtsung/tds -r /home/jtsung/ds/shp/test_geog.shp -cpq
+;$ idl ./run.src -args /home/jtsung/tds
+;$ idl ./run.src -args /home/jtsung/tds -sntc -d /home/jtsung/ds/dem.tiff
+;-
+
+;+
+;   -d path: input [D]EM file
+;   -r path: input shapefile [R]egion for subset
+;-
+
+;+
+;   -q: perform [Q]uac
+;   -s: reduce the quac outcome to original [S]cale range from 0-1
+;         <q> will be set when <s> is set
+;   -t: convert envi format outcome to (big)geo[T]iff format
+;   -n: generate an extra [N]dvi raster
+;   -p: build [P]yramid file (*.enp) to view image in envi quickly
+;   -c: print progress in [C]onsole
+;-
+
+.COMPILE snydov
+.COMPILE opms__define, owfv1__define, owfv6__define
+.COMPILE pmshandler, wfv1handler, wfv6handler
+.COMPILE addmeta, delimg, findpmsimg, log, readjson, timeex
+.COMPILE ffconvert, rpcortho, mosaicgf6, ndvigenerate, quac
+.COMPILE radcal, pansharpen, rpcredefine, subsetbyshp, unzip
+.COMPILE readheader, wrtheader
+
+RESOLVE_ALL, /CONTINUE_ON_ERROR, SKIP_ROUTINES = 'envi'
+
+args = COMMAND_LINE_ARGS()
+argsLimit = 6
+argsCurrent = N_ELEMENTS(args)
+errMsg = 'Invalid number of arguments'
+if argsCurrent gt argsLimit then begin & $
+    PRINT, STRJOIN(MAKE_ARRAY(STRLEN(errMsg)+12, val = '*', /STRING)) & $
+    PRINT, '***** ' + errMsg + ' *****' & $
+    PRINT, STRJOIN(MAKE_ARRAY(STRLEN(errMsg)+12, val = '*', /STRING)) & $
+    exit & $
+endif
+
+dir = args[0]
+if not FILE_TEST(dir, /DIRECTORY) then begin & $
+    PRINT, 'Invalid input directory' & $
+    exit & $
+endif
+
+dem = !NULL
+shp = !NULL
+key = ''
+
+case argsCurrent of & $
+    1: & $
+    2: begin & $
+        key = args[1] & $
+    end & $
+    3: begin & $
+        if args[1] eq '-d' then dem = args[2] else if args[1] eq '-r' then shp = args[2] & $
+    end & $
+    4: begin & $
+        if STRPOS(args[2], '-') ne -1 then begin & $
+            if args[2] eq '-d' then dem = args[3] else if args[2] eq '-r' then shp = args[3] & $
+            key = args[1] & $
+        endif else begin & $
+            if args[1] eq '-d' then dem = args[2] else if args[1] eq '-r' then shp = args[2] & $
+            key = args[3] & $
+        endelse & $
+    end & $
+    5: begin & $
+        if args[1] eq '-d' then begin & $
+            dem = args[2] & $
+            shp = args[4] & $
+        endif else if args[1] eq '-r' then begin & $
+            dem = args[4] & $
+            shp = args[2] & $
+        endif & $
+    end & $
+    6: begin & $
+        if STRPOS(args[5], '-') ne -1 then begin & $
+            key = args[5] & $
+            if args[1] eq '-d' then begin & $
+                dem = args[2] & $
+                shp = args[4] & $
+            endif else if args[1] eq '-r' then begin & $
+                dem = args[4] & $
+                shp = args[2] & $
+            endif & $
+        endif else begin & $
+            if STRPOS(args[3], '-') ne -1 then begin & $
+                key = args[3] & $
+                if args[1] eq '-d' then begin & $
+                    dem = args[2] & $
+                    shp = args[5] & $
+                endif else if args[1] eq '-r' then begin & $
+                    dem = args[5] & $
+                    shp = args[2] & $
+                endif & $
+            endif else begin & $
+                key = args[1] & $
+                if args[2] eq '-d' then begin & $
+                    dem = args[3] & $
+                    shp = args[5] & $
+                endif else if args[2] eq '-r' then begin & $
+                    dem = args[5] & $
+                    shp = args[3] & $
+                endif & $
+            endelse & $
+        endelse & $
+    end & $
+    else: exit & $
+endcase
+
+if dem ne !NULL then begin & $
+    if not FILE_TEST(dem) then begin & $
+        PRINT, 'Invalid DEM filename' & $
+        exit & $
+    endif & $
+endif
+
+if shp ne !NULL then begin & $
+    if not FILE_TEST(shp) then begin & $
+        PRINT, 'Invalid shapefile' & $
+        exit & $
+    endif & $
+endif
+
+qac = STRPOS(key, 'q') ne -1 ? 1B : !NULL
+scale = STRPOS(key, 's') ne -1 ? 1B : !NULL
+tiff = STRPOS(key, 't') ne -1 ? 1B : !NULL
+ndvi = STRPOS(key, 'n') ne -1 ? 1B : !NULL
+pyramid = STRPOS(key, 'p') ne -1 ? 1B : !NULL
+consoleprint = STRPOS(key, 'c') ne -1 ? 1B : !NULL
+
+flag = !NULL
+snyDov, dir, dem = dem, region = shp, qac = qac, scale = scale, tiff = tiff, ndvi = ndvi, pyramid = pyramid, consoleprint = consoleprint, __extra = flag
+
+if flag then PRINT, '**************************'
+if flag then PRINT, '**** encounter error! ****'
+if flag then PRINT, '***** del unpack dir *****'
+if flag then FILE_DELETE, FILE_SEARCH(dir, 'GF*_snyDov', /TEST_DIRECTORY), /ALLOW_NONEXISTENT, /RECURSIVE
+
+.FULL_RESET_SESSION
+PRINT, '**************************'
+PRINT, '******** exit IDL ********'
+PRINT, '**************************'
+exit

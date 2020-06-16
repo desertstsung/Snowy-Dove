@@ -3,18 +3,8 @@
 ; date 2020/2/11
 ;-
 
-;if use python+osgeo to perform
-;rpc orthorectification or/and
-;pan sharpen, its output
-;fileformat is GeoTiff
-pro oPMS::addTIFFExtension, fn
-  compile_opt idl2, hidden
-
-  self.files[WHERE(self.files eq fn)] += '.tiff'
-end
-
 ;get temporary filename
-pro oPMS::appendFile, twoTime = TWOTIME
+pro oPMS::appendFile, twice = TWICE
   compile_opt idl2, hidden
 
   firstIndex = (WHERE(self.files eq ''))[0]
@@ -25,8 +15,8 @@ pro oPMS::appendFile, twoTime = TWOTIME
     self.files[firstIndex] = !e.GetTemporaryFilename('')
   endif
 
-  ;use /TWOTIME to get temporary filename for mss and pan
-  if ISA(twoTime) and firstIndex lt N_ELEMENTS(self.files)-1 then begin
+  ;use /TWICE to get temporary filename for mss and pan
+  if ISA(TWICE) and firstIndex lt N_ELEMENTS(self.files)-1 then begin
     self.files[firstIndex + 1] = !e.GetTemporaryFilename('')
   endif
 end
@@ -93,8 +83,12 @@ pro oPMS::cleanup
   raster = !e.OpenRaster(self.files[0])
   addMeta, raster, 'Wavelength', self.wvl
   addMeta, raster, 'wavelength units', 'Nanometers'
-  common blk, pymd
-  if pymd then raster.CreatePyramid
+  common blk, pymd, null, tif
+  if pymd and not tif then begin
+    log, 'creating raster pyramid...'
+    raster.CreatePyramid
+    log, 'create raster pyramid done'
+  endif
   raster.Close
 
   lastIndex = (WHERE(self.files ne ''))[-1]

@@ -4,12 +4,6 @@
 ;-
 ;oWFV6 define is similar to oPMS
 
-pro oWFV6::addTIFFExtension, fn
-  compile_opt idl2, hidden
-
-  self.files[WHERE(self.files eq fn)] += '.tiff'
-end
-
 pro oWFV6::_setLastFile, fn
   compile_opt idl2, hidden
 
@@ -71,8 +65,12 @@ pro oWFV6::cleanup
   raster = !e.OpenRaster(self.files[0])
   addMeta, raster, 'Wavelength', self.wvl
   addMeta, raster, 'wavelength units', 'Nanometers'
-  common blk, pymd
-  if pymd then raster.CreatePyramid
+  common blk, pymd, null, tif
+  if pymd and not tif then begin
+    log, 'creating raster pyramid...'
+    raster.CreatePyramid
+    log, 'create raster pyramid done'
+  endif
   raster.Close
 
   lastIndex = (WHERE(self.files ne ''))[-1]

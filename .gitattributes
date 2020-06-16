@@ -1,1 +1,2 @@
 *.pro linguist-language=IDL
+*.py linguist-language=python

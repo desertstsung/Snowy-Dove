@@ -8,7 +8,6 @@
 ;-
 pro rpcOrtho, i_fn, dem, o_fn
   compile_opt idl2, hidden
-  log, 'RPC orthorectification [I]: ', [i_fn, dem]
 
   common pyblk, pyFlag, py3Flag
   SPAWN, 'python --version', msg, err
@@ -24,20 +23,21 @@ pro rpcOrtho, i_fn, dem, o_fn
 
     script = pyFlag ? 'python ' : 'python3 '
     script += FILEPATH('pyortho.py', root = FILE_DIRNAME(ROUTINE_FILEPATH())) + ' '
-    script += i_fn + ' ' + dem + ' ' + o_fn + '.tiff'
+    script += i_fn + ' ' + dem + ' ' + o_fn
+    log, 'gdal RPC orthorectification [I]: ', [i_fn, dem]
     SPAWN, script, msg, err
-    
+
     if msg eq '-1' or err eq '-1' then begin
+      log, 'gdal RPC orthorectification [O]: failed'
       goto, ENVIOrtho
     endif else begin
-      !obj.addTIFFExtension, o_fn
-      o_fn += '.tiff'
-      log, 'RPC orthorectification [O]: ', o_fn
+      log, 'gdal RPC orthorectification [O]: ', o_fn
     endelse
 
   endif else begin
 
     ENVIOrtho: begin
+      log, 'RPC orthorectification [I]: ', [i_fn, dem]
       ;envitask to apply RPCOrthorectification
       inRaster = !e.OpenRaster(i_fn)
       demRaster = !e.OpenRaster(dem)

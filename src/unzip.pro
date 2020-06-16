@@ -18,6 +18,7 @@ pro unzip
   ;using tar command in terminal
   ;is faster than using file_untar in idl
   ;but only in big file size
+  log, 'decompressing...'
   if !version.OS_FAMILY eq 'unix' and sz gt 500 then begin
     SPAWN, 'mkdir ' + !obj.imgDir + ' && ' + $
       'tar -zxf ' + !obj.tgz_fn +' -C ' + !obj.imgDir, rst, err
@@ -25,5 +26,5 @@ pro unzip
   endif else begin
     IDL_untar: FILE_UNTAR, !obj.tgz_fn, !obj.imgDir
   endelse
-  log, 'unzip done'
+  log, 'decompress done'
 end

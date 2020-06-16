@@ -1,5 +1,5 @@
 ;+
-; procedure to produce an extra DNVI raster
+; procedure to produce an extra NDVI raster
 ;
 ; :Arguments:
 ;   i_fn: filename of original raster to produce NDVI
@@ -7,27 +7,19 @@
 ;-
 pro ndviGenerate, i_fn, o_fn
   compile_opt idl2, hidden
-  log, 'NDVI [I]: ', i_fn
+  log, 'perform NDVI [I]: ', i_fn
 
-  ;generate NDVI
-  ENVI_OPEN_FILE, i_fn, r_fid = fid
-  ENVI_FILE_QUERY, fid, dims = dims
-  ENVI_DOIT, 'NDVI_DOIT', fid = fid, $
-    dims = dims, pos = [3,2], /CHECK, $
-    out_bname = 'NDVI', out_dt = 4, $
-    out_name = o_fn, r_fid = ndid
+  sd_ndvi, i_fn, o_fn
 
-  ;close files
-  ENVI_FILE_MNG, id = fid, /REMOVE
-  ENVI_FILE_MNG, id = ndid, /REMOVE
+  log, 'perform NDVI [O]: ', o_fn
 
   ;create pyramid
   common blk, pymd
   if pymd then begin
+    log, 'creating raster pyramid...'
     raster = !e.OpenRaster(o_fn)
     raster.CreatePyramid
     raster.Close
+    log, 'create raster pyramid done'
   endif
-
-  log, 'NDVI [O]: ', o_fn
 end
