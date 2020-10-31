@@ -153,7 +153,7 @@
 ;
 ; :Number_of_Lines:
 ;    TOTAL  : 1826(IDL) + 132(Python) + 2160(C) = 4118
-;    BLANK  :   31(IDL) +  19(Python) +  209(C) =  259(6.29%)
+;    BLANK  :   31(IDL) +  19(Python) +  209(C) =  259( 6.29%)
 ;    COMMENT:  404(IDL) +  10(Python) +   64(C) =  478(11.61%)
 ;
 ; :Author:
