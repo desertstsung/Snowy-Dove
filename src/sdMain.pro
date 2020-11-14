@@ -150,11 +150,13 @@
 ;                change dynamically loadable module to executable file(../binary/*)
 ;                bug-fix of python flag
 ;                date 2020/10/31
+;    v2.1      : update cal. coef. of 2020
+;                date 2020/11/13
 ;
 ; :Number_of_Lines:
-;    TOTAL  : 1826(IDL) + 132(Python) + 2160(C) = 4118
-;    BLANK  :   31(IDL) +  19(Python) +  209(C) =  259( 6.29%)
-;    COMMENT:  404(IDL) +  10(Python) +   64(C) =  478(11.61%)
+;    TOTAL  : 1895(IDL) + 132(Python) + 2160(C) = 4187
+;    BLANK  :   31(IDL) +  19(Python) +  209(C) =  259( 6.19%)
+;    COMMENT:  407(IDL) +  10(Python) +   64(C) =  481(11.29%)
 ;
 ; :Author:
 ;    deserts Tsung (desertstsung@qq.com)

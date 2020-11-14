@@ -3,6 +3,9 @@
 ;   Organized by year
 ; -
 case year of
+  '2021': begin
+            @sd_radcalcoeff_2021
+          end
   '2020': begin
             @sd_radcalcoeff_2020
           end
@@ -28,6 +31,6 @@ case year of
             @sd_radcalcoeff_2013
           end
   else  : begin
-            @sd_radcalcoeff_2020
+            @sd_radcalcoeff_2021
           end
 endcase

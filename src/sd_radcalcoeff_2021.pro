@@ -1,5 +1,5 @@
 ; +
-;   Radiance calibration coefficients for each sensor in 2020
+;   Radiance calibration coefficients for each sensor in 2021 (copy of 2020)
 ;   Organized by satellite -> sensor
 ; -
 case satellite of
