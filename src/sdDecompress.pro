@@ -16,9 +16,16 @@ pro sdDecompress
   ;but only in big file size
   sdLog, 'decompressing...'
   if islinux and sz gt 500 then begin
-    SPAWN, 'mkdir ' + sdstruct.L1imagesdir + $
-           ' && ' + $
-           'tar -zxf ' + sdstruct.tgzfn +' -C ' + sdstruct.L1imagesdir, rst, err
+    cmd1   = 'mkdir'
+    par11  = '"' + sdstruct.L1imagesdir + '"'
+    par    = '&&'
+    cmd2   = 'tar'
+    par21  = '-zxf'
+    par22  = '"' + sdstruct.tgzfn + '"'
+    par23  = '-C'
+    par24  = '"' + sdstruct.L1imagesdir + '"'
+    strCLI = STRJOIN([cmd1, par11, par, cmd2, par21, par22, par23, par24], ' ')
+    if islinux then SPAWN, strCLI, rst, err else SPAWN, strCLI, rst, err, /HIDE
     if err ne '' then goto, IDL_untar
   endif else begin
     IDL_untar: FILE_UNTAR, sdstruct.tgzfn, sdstruct.L1imagesdir

@@ -8,27 +8,28 @@
 ;-
 pro sdPanSharpen, panfileIn, msfileIn, fileOut
   compile_opt idl2, hidden
-  common sdblock, e, sdstruct, logfn, py
+  common sdblock, e, sdstruct, logfn, py, islinux
   
   ;if current OS have python3 and gdal(python package) environment
   ;then use python script to perform pan sharpen
   if py then begin
     sdLog, 'gdal pan sharpen [I]: ', [panfileIn, msfileIn]
-    script = py                                                                                                           $
-             + ' '                                                                                                        $
-             + FILEPATH('pysharpen.py', ROOT_DIR=FILE_DIRNAME(FILE_DIRNAME(ROUTINE_FILEPATH())), SUBDIRECTORY='external') $
-             + ' '                                                                                                        $
-             + panfileIn                                                                                                  $
-             + ' '                                                                                                        $
-             + msfileIn                                                                                                   $
-             + ' '                                                                                                        $
-             + fileOut
-    SPAWN, script, msg, err
+    
+    par1   = '"' + $
+             FILEPATH('pysharpen.py', $
+                      ROOT_DIR=FILE_DIRNAME(FILE_DIRNAME(ROUTINE_FILEPATH())), $
+                      SUBDIRECTORY='external') + $
+             '"'
+    par2   = '"' + panfileIn + '"'
+    par3   = '"' + msfileIn  + '"'
+    par4   = '"' + fileOut   + '"'
+    strCLI = STRJOIN([py, par1, par2, par3, par4], ' ')
+    if islinux then SPAWN, strCLI, msg, err else SPAWN, strCLI, msg, err, /HIDE
     
     if msg eq '-1' or err eq '-1' then begin
       ;if throw error, then use ENVITask intead
-      goto, enviSharpen
       sdLog, 'gdal pan sharpen [O]: failed'
+      goto, enviSharpen
     endif else begin
       sdLog, 'gdal pan sharpen [O]: ', fileOut
     endelse

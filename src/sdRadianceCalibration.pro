@@ -28,16 +28,17 @@ pro sdRadianceCalibration, fileIn, fileOut
   endelse
   
   ;use executable sd_radcal(.exe) to apply radiance calibration
-  script = FILEPATH('sd_radcal' + (islinux ? '' : '.exe'), ROOT_DIR=FILE_DIRNAME(FILE_DIRNAME(ROUTINE_FILEPATH())), SUBDIRECTORY='binary') $
-           + ' '                                                                                                                           $
-           + fileIn                                                                                                                        $
-           + ' '                                                                                                                           $
-           + fileOut                                                                                                                       $
-           + ' '                                                                                                                           $
-           + STRJOIN(STRING(gain, FORMAT='(F6.4)'), ' ')                                                                                   $
-           + ' '                                                                                                                           $
-           + STRJOIN(STRING(offs, FORMAT='(F6.4)'), ' ')
-  SPAWN, script
+  exefn  = '"' + $
+           FILEPATH('sd_radcal' + (islinux ? '' : '.exe'), $
+                    ROOT_DIR=FILE_DIRNAME(FILE_DIRNAME(ROUTINE_FILEPATH())), $
+                    SUBDIRECTORY='binary') + $
+           '"'
+  par1   = '"' + fileIn  + '"'
+  par2   = '"' + fileOut + '"'
+  par3   = STRJOIN(STRING(gain, FORMAT='(F6.4)')  , ' ')
+  par4   = STRJOIN(STRING(offs, FORMAT='(F6.4)')  , ' ')
+  strCLI = STRJOIN([exefn, par1, par2, par3, par4], ' ')
+  if islinux then SPAWN, strCLI else SPAWN, strCLI, /HIDE
   
   sdLog, 'radiance calibration [O]: ', fileOut
 end

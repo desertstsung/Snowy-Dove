@@ -23,8 +23,8 @@ pro sdCommonProcess
   ;QUAC produce raster with '.HDR' header
   ;but in this progress
   ;raster is with '.hdr' header by default
-  ;thus, rename the header
-  if FILE_TEST((h = sdstruct.outputfn+'.HDR')) then FILE_MOVE, h, sdstruct.outputfn+'.hdr'
+  ;thus, rename the header, only in linux
+  if FILE_TEST((h = sdstruct.outputfn+'.HDR')) then FILE_MOVE, h, sdstruct.outputfn+'.hdr', /ALLOW_SAME
 
   ;NDVI
   if sdstruct.flag_ndvi then begin

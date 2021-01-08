@@ -1,14 +1,18 @@
 # ==================================================== #
 # Snowy Dove external python source code               #
 #   --Pan sharpening model                             #
-# Last modified in 27/10/2020                          #
+# Last modified on 16/Dec/2020                          #
 # ==================================================== #
 
 
 
 import sys
-from osgeo import gdal, osr
-from gdalconst import *
+try:
+    from osgeo     import gdal, osr
+    from gdalconst import *
+except ImportError:
+    print(-1)
+    sys.exit(-1)
 
 def pysharpen(null, pan, ms, ofn):
     # get num of bands

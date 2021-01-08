@@ -1,19 +1,14 @@
 # ==================================================== #
 # Snowy Dove external python source code               #
 #   --warp model                                       #
-# Last modified in 31/10/2020                          #
+# Last modified in 16/Dec/2020                         #
 # ==================================================== #
 
 
 
 import sys, os
-
 try:
-    from osgeo import gdal, osr
-except ImportError:
-    print(-1)
-    sys.exit(-1)
-try:
+    from osgeo     import gdal, osr
     from gdalconst import *
 except ImportError:
     print(-1)

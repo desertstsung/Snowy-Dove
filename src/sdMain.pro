@@ -144,6 +144,7 @@
 ;                  |  |--sd_radcalcoeff_2018.pro
 ;                  |  |--sd_radcalcoeff_2019.pro
 ;                  |  |--sd_radcalcoeff_2020.pro
+;                  |  |--sd_radcalcoeff_2021.pro
 ;                  |  |--sd_radcalcoeff_main.pro
 ;                  |__|--sd_wavelength.pro
 ;                add radiance calibration keyword
@@ -152,11 +153,18 @@
 ;                date 2020/10/31
 ;    v2.1      : update cal. coef. of 2020
 ;                date 2020/11/13
+;    v2.2      : bug fix of FILE_MOVE operation(Win platform)
+;                bug fix of SPAWN when there is blank in filename
+;                bug fix of non-gdal environment
+;                hide SPAWN under Win
+;                add __debug keyword
+;                update wavelength and add sd_wavelength_max_response.pro
+;                date 8/Jan/2021
 ;
 ; :Number_of_Lines:
-;    TOTAL  : 1895(IDL) + 132(Python) + 2160(C) = 4187
-;    BLANK  :   31(IDL) +  19(Python) +  209(C) =  259( 6.19%)
-;    COMMENT:  407(IDL) +  10(Python) +   64(C) =  481(11.29%)
+;    TOTAL  : 1965(IDL) + 131(Python) + 2160(C) = 4256
+;    BLANK  :  112(IDL) +  19(Python) +  209(C) =  340( 7.99%)
+;    COMMENT:  529(IDL) +  10(Python) +   64(C) =  603(14.17%)
 ;
 ; :Author:
 ;    deserts Tsung (desertstsung@qq.com)
@@ -172,12 +180,14 @@ pro sdMain, tgzdirIn         , $
             tiff    = TIFF   , $
             ndvi    = NDVI   , $
             pyramid = PYRAMID, $
-            verbose = VERBOSE
+            verbose = VERBOSE, $
+            __debug = __DEBUG
   compile_opt  idl2, hidden
   common sdblock, e, sdstruct, logfn, py, islinux, lun
+  ON_ERROR, ISA(__DEBUG) ? 0 : 2
 
   ;================= current version of snowy dove =================
-  __version__ = '2.0'
+  __version__ = '2.2'
 
   ;===================== input directory check =====================
   if ~ISA(tgzdirIn) then tgzdirIn = DIALOG_PICKFILE(/DIRECTORY)
@@ -202,8 +212,8 @@ pro sdMain, tgzdirIn         , $
   logfn = FILEPATH(sdTimeStr(/FILENAME) + '.log', ROOT_DIR=outputdirectory)
 
   ;============================ load DLM ===========================
-  DLM_LOAD, 'XML' , 'SHAPEFILE', 'JPEG2000', 'JPEG'  , 'PNG', $
-            'TIFF', 'GDAL'     , 'MAP_PE'  , 'NATIVE', 'JPIP'
+  DLM_LOAD, 'XML', 'GDAL', 'JPEG', 'NATIVE', 'SHAPEFILE', $
+            'PNG', 'TIFF', 'JPIP', 'MAP_PE', 'JPEG2000' , 'HDF5'
   
   ;====================== get ENVI environment =====================
   if ~(e = ENVI(/CURRENT)) then e = ENVI(/HEADLESS)
@@ -214,17 +224,19 @@ pro sdMain, tgzdirIn         , $
     if ~FILE_TEST(demfn) then demfn = defaultdem
   endif else demfn = defaultdem
   
-  ;================== python3 check, not required ==================
-  SPAWN, 'python --version', msg, err
-  py = 2B
-  if   STREGEX(msg, '3.*') ne -1 or STREGEX(err, '3.*') ne -1 then py = 'python'
-  if py eq 2B then begin
-    SPAWN, 'python3 --version', msg, err
-    if STREGEX(msg, '3.*') ne -1 or STREGEX(err, '3.*') ne -1 then py = 'python3'
-  endif
-  
   ;================== current OS is linux based ? ==================
   islinux = !version.OS eq 'linux'
+  
+  ;================== python3 check, not required ==================
+  if islinux then SPAWN, 'python --version', msg, err $
+  else SPAWN, 'python --version', msg, err, /HIDE
+  py = ''
+  if   STREGEX(msg, '3.*') ne -1 or STREGEX(err, '3.*') ne -1 then py = 'python'
+  if py eq '' then begin
+    if islinux then SPAWN, 'python3 --version', msg, err $
+    else SPAWN, 'python3 --version', msg, err, /HIDE
+    if STREGEX(msg, '3.*') ne -1 or STREGEX(err, '3.*') ne -1 then py = 'python3'
+  endif
   
   ;======== get valid logical unit number for recyclable use =======
   GET_LUN, lun

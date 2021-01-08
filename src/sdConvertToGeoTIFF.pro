@@ -10,10 +10,14 @@ pro sdConvertToGeoTIFF, fileIn
   sdLog, 'ENVI2TIFF [I]: ', fileIn
   
   ;use executable sd_nv2tiff(.exe) to perform file format convert
-  SPAWN, FILEPATH('sd_nv2tiff' + (islinux ? '' : '.exe'), $
-                  ROOT_DIR=FILE_DIRNAME(FILE_DIRNAME(ROUTINE_FILEPATH())), $
-                  SUBDIRECTORY='binary') $
-         + ' ' + fileIn
+  exefn  = '"' + $
+           FILEPATH('sd_nv2tiff' + (islinux ? '' : '.exe'), $
+                    ROOT_DIR=FILE_DIRNAME(FILE_DIRNAME(ROUTINE_FILEPATH())), $
+                    SUBDIRECTORY='binary') + $
+           '"'
+  par    = '"' + fileIn + '"'
+  strCLI = STRJOIN([exefn, par], ' ')
+  if islinux then SPAWN, strCLI else SPAWN, strCLI, /HIDE
   
   ;add wavelength to header in order to load true color or CIR easily
   sdReadHeader  , fileIn, NS=ns, NL=nl, NB=nb, DT=dt, INTER=inter

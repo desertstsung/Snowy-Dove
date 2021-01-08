@@ -7,22 +7,23 @@
 ;-
 pro sdRPCWarp, fileIn, fileOut
   compile_opt idl2, hidden
-  common sdblock, e, sdstruct, logfn, py
+  common sdblock, e, sdstruct, logfn, py, islinux
   
   ;if current OS have python3 and gdal(python package) environment
   ;then use python script to perform RPC warp
   if py then begin
-    script = py                                                                                                        $
-             + ' '                                                                                                     $
-             + FILEPATH('pywarp.py', ROOT_DIR=FILE_DIRNAME(FILE_DIRNAME(ROUTINE_FILEPATH())), SUBDIRECTORY='external') $
-             + ' '                                                                                                     $
-             + fileIn                                                                                                  $
-             + ' '                                                                                                     $
-             + sdstruct.demfn                                                                                          $
-             + ' '                                                                                                     $
-             + fileOut
     sdLog, 'gdal RPC Warp [I]: ', [fileIn, sdstruct.demfn]
-    SPAWN, script, msg, err
+    
+    par1   = '"' + $
+             FILEPATH('pywarp.py', $
+                       ROOT_DIR=FILE_DIRNAME(FILE_DIRNAME(ROUTINE_FILEPATH())), $
+                       SUBDIRECTORY='external') + $
+             '"'
+    par2   = '"' + fileIn          + '"'
+    par3   = '"' + sdstruct.demfn  + '"'
+    par4   = '"' + fileOut         + '"'
+    strCLI = STRJOIN([py, par1, par2, par3, par4], ' ')
+    if islinux then SPAWN, strCLI, msg, err else SPAWN, strCLI, msg, err, /HIDE
 
     if msg eq '-1' or err eq '-1' then begin
       ;if throw error, then use ENVITask intead
